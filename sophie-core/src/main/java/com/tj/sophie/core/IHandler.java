@@ -12,7 +12,7 @@ public interface IHandler {
      *
      * @return 返回处理器对应的消息Id.
      */
-    VerbId getVerbId();
+    Action getAction();
 
     /**
      * 获取一个值, 标识消息处理器的优先级.
