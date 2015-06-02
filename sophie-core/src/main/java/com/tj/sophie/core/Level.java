@@ -1,6 +1,4 @@
-package com.tj.report.sophie;
-
-/**
+package com.tj.sophie.core; /**
  * Created by mbp on 6/2/15.
  */
 

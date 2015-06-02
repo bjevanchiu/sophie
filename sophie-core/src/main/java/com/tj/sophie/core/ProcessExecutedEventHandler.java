@@ -1,4 +1,4 @@
-package com.tj.report.sophie;
+package com.tj.sophie.core;
 
 import com.google.gson.JsonObject;
 
