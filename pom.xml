@@ -41,4 +41,25 @@
             </plugins>
         </pluginManagement>
     </build>
+    <repositories>
+        <repository>
+            <id>internal-snapshots</id>
+            <url>http://maven.didiman.com/nexus/content/repositories/internal-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    <distributionManagement>
+        <repository>
+            <id>internal-releases</id>
+            <url>http://maven.didiman.com/nexus/content/repositories/internal-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>internal-snapshots</id>
+            <url>http://maven.didiman.com/nexus/content/repositories/internal-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

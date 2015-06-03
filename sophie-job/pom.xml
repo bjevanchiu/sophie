@@ -12,6 +12,14 @@
     <artifactId>sophie-job</artifactId>
 
     <dependencies>
+
+        <!--私有模块-->
+        <dependency>
+            <artifactId>sophie-core</artifactId>
+            <groupId>com.tj.report</groupId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <!--共享库-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
