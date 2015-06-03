@@ -64,7 +64,7 @@ public final class ActionService implements IActionService {
         this.handlers.put(action, list);
     }
 
-    public synchronized void execute(Action action, Context context) throws Exception {
+    public synchronized void execute(Action action, IContext context) throws Exception {
         if (action == null) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("verbId");
         }
@@ -83,7 +83,7 @@ public final class ActionService implements IActionService {
     }
 
     @Override
-    public void execute(String category, String id, Context context) throws Exception {
+    public void execute(String category, String id, IContext context) throws Exception {
         this.execute(Action.create(category, id), context);
     }
 }

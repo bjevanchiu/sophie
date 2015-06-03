@@ -28,7 +28,7 @@ public interface IActionService {
      * @param action  消息Id
      * @param context 上下文.
      */
-    void execute(Action action, Context context) throws Exception;
+    void execute(Action action, IContext context) throws Exception;
 
     /**
      * 处理消息.
@@ -37,5 +37,5 @@ public interface IActionService {
      * @param id       VerbId的Id值
      * @param context  上下文
      */
-    void execute(String category, String id, Context context) throws Exception;
+    void execute(String category, String id, IContext context) throws Exception;
 }

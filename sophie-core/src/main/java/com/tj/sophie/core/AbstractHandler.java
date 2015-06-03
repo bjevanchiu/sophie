@@ -10,6 +10,7 @@ package com.tj.sophie.core;
 public abstract class AbstractHandler implements IHandler {
 
     private Action action;
+
     private Level level = Level.Normal;
 
     /**
@@ -43,9 +44,9 @@ public abstract class AbstractHandler implements IHandler {
         this.level = level;
     }
 
-    public void execute(Context context) {
+    public void execute(IContext context) {
         this.onExecute(context);
     }
 
-    protected abstract void onExecute(Context context);
+    protected abstract void onExecute(IContext context);
 }

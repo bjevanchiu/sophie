@@ -26,6 +26,6 @@ public interface IHandler {
      *
      * @param context 上下文.
      */
-    void execute(Context context);
+    void execute(IContext context);
 
 }

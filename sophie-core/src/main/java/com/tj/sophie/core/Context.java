@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Created by mbp on 6/2/15.
  */
-public final class Context {
+public final class Context implements IContext {
 
     private Map<String, Object> map = new HashMap<>();
 
