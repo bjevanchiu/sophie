@@ -1,11 +1,16 @@
 package com.tj.sophie.job;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.tj.sophie.core.IActionService;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by mbp on 6/2/15.
@@ -16,18 +21,23 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
 
         IActionService actionService = Container.getInstance().getActionService();
 
-        com.tj.sophie.core.Context ctx = new com.tj.sophie.core.Context();
-        ctx.set("line", value);
+        com.tj.sophie.core.Context ctx = null;
+        ctx = new com.tj.sophie.core.Context(value.toString());
 
-        try {
-            actionService.execute("main", "main", ctx);
-        } catch (Exception e) {
-            e.printStackTrace();
+        actionService.execute("main", "main", ctx);
+
+        Set<Map.Entry<String, Object>> entries = ctx.getResultEntries();
+        Map<String, Object> map = new HashMap<>();
+
+        for (Map.Entry<String, Object> item : entries) {
+            map.put(item.getKey(), item.getValue());
         }
 
-        String output = ctx.get("output");
+        Gson gson = new Gson();
+        String json = gson.toJson(map, new TypeToken<Map<String, Object>>() {
+        }.getType());
 
-        context.write(new Text(output), NullWritable.get());
+        context.write(new Text(json), NullWritable.get());
 
     }
 }

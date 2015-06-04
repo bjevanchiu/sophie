@@ -24,7 +24,7 @@ public final class Action {
         return id;
     }
 
-    public Action(String category, String id) throws Exception {
+    public Action(String category, String id) {
         if (category == null || category.trim().isEmpty()) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("category");
         }
@@ -43,7 +43,7 @@ public final class Action {
      * @param id
      * @return 返回VerbId实例
      */
-    public static Action create(String category, String id) throws Exception {
+    public static Action create(String category, String id) {
         return new Action(category, id);
     }
 

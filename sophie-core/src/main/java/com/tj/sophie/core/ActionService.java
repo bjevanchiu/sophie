@@ -1,6 +1,7 @@
 package com.tj.sophie.core;
 
 import com.google.inject.Singleton;
+import com.tj.sophie.guice.Binging;
 
 import java.util.*;
 
@@ -10,11 +11,12 @@ import java.util.*;
 
 
 @Singleton
+@Binging(from = IActionService.class, to = ActionService.class)
 public final class ActionService implements IActionService {
 
     private Map<Action, List<IHandler>> handlers = new HashMap<>();
 
-    public synchronized void register(IHandler handler) throws Exception {
+    public synchronized void register(IHandler handler) {
         if (handler == null) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("handler");
         }
@@ -39,7 +41,7 @@ public final class ActionService implements IActionService {
         this.handlers.put(action, list);
     }
 
-    public synchronized void unregister(IHandler handler) throws Exception {
+    public synchronized void unregister(IHandler handler) {
         if (handler == null) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("handler");
         }
@@ -64,7 +66,7 @@ public final class ActionService implements IActionService {
         this.handlers.put(action, list);
     }
 
-    public synchronized void execute(Action action, IContext context) throws Exception {
+    public synchronized void execute(Action action, IContext context) {
         if (action == null) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("verbId");
         }
@@ -83,7 +85,7 @@ public final class ActionService implements IActionService {
     }
 
     @Override
-    public void execute(String category, String id, IContext context) throws Exception {
+    public void execute(String category, String id, IContext context) {
         this.execute(Action.create(category, id), context);
     }
 }

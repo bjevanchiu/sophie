@@ -9,20 +9,58 @@ import java.util.Set;
  */
 public final class Context implements IContext {
 
-    private Map<String, Object> map = new HashMap<>();
+    private Map<String, Object> variableMap = new HashMap<>();
+    private Map<String, Object> resultMap = new HashMap<>();
 
-    public synchronized <T> void set(String key, T value) {
-        this.map.put(key, value);
-    }
+    private String input = null;
 
-    public synchronized <T> T get(String key) {
-        if (!this.map.containsKey(key)) {
-            return null;
+    public Context(String input) {
+        this.input = input;
+        if (input == null || input.trim().isEmpty()) {
+            throw ExceptionHelper.ArgumentIsNullOrEmpty("input");
         }
-        return (T) this.map.get(key);
+        this.input = input.trim();
     }
 
-    public Set<Map.Entry<String, Object>> getEntries() {
-        return this.map.entrySet();
+
+    @Override
+    public String getInput() {
+        return this.input;
+    }
+
+    @Override
+    public <T> T getVariable(String key) {
+        if (this.variableMap.containsKey(key)) {
+            return (T) variableMap.get(key);
+        }
+        return null;
+    }
+
+    @Override
+    public <T> void setVariable(String key, T value) {
+        this.variableMap.put(key, value);
+    }
+
+    @Override
+    public Set<Map.Entry<String, Object>> getVariableEntries() {
+        return this.variableMap.entrySet();
+    }
+
+    @Override
+    public <T> T getResult(String key) {
+        if (this.resultMap.containsKey(key)) {
+            return (T) variableMap.get(key);
+        }
+        return null;
+    }
+
+    @Override
+    public <T> void setResult(String key, T value) {
+        this.resultMap.put(key, value);
+    }
+
+    @Override
+    public Set<Map.Entry<String, Object>> getResultEntries() {
+        return this.resultMap.entrySet();
     }
 }
