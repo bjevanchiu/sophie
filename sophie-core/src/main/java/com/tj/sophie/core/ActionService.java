@@ -1,7 +1,7 @@
 package com.tj.sophie.core;
 
 import com.google.inject.Singleton;
-import com.tj.sophie.guice.Binging;
+import com.tj.sophie.guice.Binding;
 
 import java.util.*;
 
@@ -11,7 +11,7 @@ import java.util.*;
 
 
 @Singleton
-@Binging(from = IActionService.class, to = ActionService.class)
+@Binding(from = IActionService.class, to = ActionService.class)
 public final class ActionService implements IActionService {
 
     private Map<Action, List<IHandler>> handlers = new HashMap<>();

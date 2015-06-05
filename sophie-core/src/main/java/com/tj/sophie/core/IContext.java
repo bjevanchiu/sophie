@@ -16,7 +16,7 @@ public interface IContext {
 
     Set<Map.Entry<String, Object>> getVariableEntries();
 
-    <T> T getResult(String key);
+    <T> T  getResult(String key);
 
     <T> void setResult(String key, T value);
 

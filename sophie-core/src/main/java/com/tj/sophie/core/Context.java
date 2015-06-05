@@ -49,7 +49,7 @@ public final class Context implements IContext {
     @Override
     public <T> T getResult(String key) {
         if (this.resultMap.containsKey(key)) {
-            return (T) variableMap.get(key);
+            return (T) resultMap.get(key);
         }
         return null;
     }
