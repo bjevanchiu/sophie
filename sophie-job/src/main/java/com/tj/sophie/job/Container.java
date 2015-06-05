@@ -7,7 +7,9 @@ import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IHandler;
 import com.tj.sophie.guice.Binding;
 import com.tj.sophie.guice.Handler;
+import org.apache.commons.io.FileUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -80,6 +82,15 @@ public class Container {
     private List<Class<?>> loadClassMetadatas() throws IOException, ClassNotFoundException {
         List<Class<?>> result = new ArrayList<>();
         String jarFilePath = this.getJarFilePath();
+        Logger.debug("jar path %s", jarFilePath);
+
+        File file = new File(jarFilePath);
+        Collection<File> files = FileUtils.listFiles(file.getParentFile(), null, true);
+        for (File x : files) {
+            Logger.debug("load path %s", x.getAbsolutePath());
+        }
+
+
         List<JarEntry> entries = this.filter(new JarFile(jarFilePath));
         for (JarEntry entry : entries) {
             String name = entry.getName();
@@ -112,10 +123,12 @@ public class Container {
 
     private String getJarFilePath() {
         String path = Container.class.getResource("").getFile();
-        Pattern pattern = Pattern.compile("^file:(?<jar>[^!]*)!");
+        Logger.debug("resource path %s", path);
+        //Pattern pattern = Pattern.compile("^.*?file:(?<jar>[^!]*)!");
+        Pattern pattern = Pattern.compile("file:(?<path>.*)$");
         Matcher matcher = pattern.matcher(path);
         while (matcher.find()) {
-            return matcher.group("jar");
+            return matcher.group("path");
         }
         return null;
     }

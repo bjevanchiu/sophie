@@ -10,7 +10,6 @@ import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import com.tj.sophie.core.IHandler;
 import com.tj.sophie.core.IInitializable;
-import com.tj.sophie.core.IService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
