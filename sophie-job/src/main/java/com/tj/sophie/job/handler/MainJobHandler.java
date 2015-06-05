@@ -24,11 +24,6 @@ public class MainJobHandler extends AbstractHandler {
     @Inject
     private IActionService actionService;
 
-    public MainJobHandler() {
-        this.setAction(Action.create("mainjob", "mainjob"));
-    }
-
-
     @Override
     protected void onExecute(IContext context) {
         String input = context.getInput();
@@ -42,5 +37,10 @@ public class MainJobHandler extends AbstractHandler {
             context.setVariable("json", json);
         }
         this.actionService.execute(Action.create("process", "process"), context);
+    }
+
+    @Override
+    protected void onInitialize() {
+        this.setAction(Action.create("mainjob", "mainjob"));
     }
 }

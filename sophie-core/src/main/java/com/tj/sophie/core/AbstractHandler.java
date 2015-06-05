@@ -13,6 +13,8 @@ public abstract class AbstractHandler implements IHandler {
 
     private Level level = Level.Normal;
 
+    private boolean initialized = false;
+
     /**
      * 获取一个值, 表示处理器对应的VerbId.
      *
@@ -44,9 +46,20 @@ public abstract class AbstractHandler implements IHandler {
         this.level = level;
     }
 
+    @Override
+    public synchronized void initialize() {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        this.onInitialize();
+    }
+
     public void execute(IContext context) {
         this.onExecute(context);
     }
 
     protected abstract void onExecute(IContext context);
+
+    protected abstract void onInitialize();
 }

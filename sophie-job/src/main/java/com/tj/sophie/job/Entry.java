@@ -1,5 +1,6 @@
 package com.tj.sophie.job;
 
+import com.google.gson.Gson;
 import com.tj.sophie.core.Action;
 import com.tj.sophie.core.Context;
 import com.tj.sophie.core.IActionService;
@@ -13,12 +14,14 @@ import java.util.List;
  */
 public class Entry {
     public static void main(String[] args) {
-//        IActionService actionService = Container.getInstance().getActionService();
-//        IContext context = new Context("empty");
-//        actionService.execute(Action.create("main", "main"), context);
-//        Object x = context.getResult("students");
-//        List<Student> xx = context.getResult("students");
-//        System.out.println(x);
-//        System.out.println(xx);
+        IActionService actionService = Container.getInstance().getActionService();
+        IContext context = new Context("empty");
+        actionService.execute(Action.create("main", "main"), context);
+        List<Student> students = context.getResult("students");
+        Gson gson = new Gson();
+        for (Student student : students) {
+            String jsonString = gson.toJson(student);
+            System.out.println(jsonString);
+        }
     }
 }

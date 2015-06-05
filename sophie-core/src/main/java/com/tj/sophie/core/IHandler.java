@@ -5,7 +5,7 @@ package com.tj.sophie.core; /**
 /**
  * 消息处理器接口
  */
-public interface IHandler {
+public interface IHandler extends IInitializable {
 
     /**
      * 获取一个值, 表示消息Id.

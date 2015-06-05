@@ -16,10 +16,6 @@ import java.util.List;
 @Handler
 public class MainHandler extends AbstractHandler {
 
-    public MainHandler() {
-        this.setAction(Action.create("main", "main"));
-    }
-
     @Inject
     private IStudentService studentService;
 
@@ -27,5 +23,10 @@ public class MainHandler extends AbstractHandler {
     protected void onExecute(IContext context) {
         List<Student> students = studentService.getStudents();
         context.setResult("students", students);
+    }
+
+    @Override
+    protected void onInitialize() {
+        this.setAction(Action.create("main", "main"));
     }
 }

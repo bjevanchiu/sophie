@@ -17,10 +17,6 @@ import java.util.Map;
 @Handler
 public class GeneralJsonHandler extends AbstractHandler {
 
-    public GeneralJsonHandler() {
-        this.setAction(Action.create("process", "process"));
-    }
-
     @Override
     protected void onExecute(IContext context) {
         JsonObject json = context.getVariable("json");
@@ -45,5 +41,8 @@ public class GeneralJsonHandler extends AbstractHandler {
         }
     }
 
-
+    @Override
+    protected void onInitialize() {
+        this.setAction(Action.create("process", "process"));
+    }
 }

@@ -9,6 +9,7 @@ import com.google.inject.spi.InjectionListener;
 import com.google.inject.spi.TypeEncounter;
 import com.google.inject.spi.TypeListener;
 import com.tj.sophie.core.IHandler;
+import com.tj.sophie.core.IInitializable;
 import com.tj.sophie.core.IService;
 
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ public class MainModule extends AbstractModule {
                 encounter.register(new InjectionListener<I>() {
                     @Override
                     public void afterInjection(I injectee) {
-                        if (injectee instanceof IService) {
-                            ((IService) injectee).initialize();
+                        if (injectee instanceof IInitializable) {
+                            ((IInitializable) injectee).initialize();
                         }
                     }
                 });
