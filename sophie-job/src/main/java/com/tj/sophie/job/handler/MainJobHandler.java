@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class MainJobHandler extends AbstractHandler {
 
     private Gson gson = new Gson();
-    private Pattern pattern = Pattern.compile("[^\\{](?<json>\\{.*\\})");
+    private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<level>\\w)+ *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<processedFlag>processed:)?(?<json>\\{.*\\})");
 
     @Inject
     private IActionService actionService;
@@ -35,8 +35,11 @@ public class MainJobHandler extends AbstractHandler {
         if (jsonString != null && !jsonString.trim().isEmpty()) {
             JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
             context.setVariable("json", json);
+            this.actionService.execute(Action.create("process", "process"), context);
+        } else {
+            context.setResult("error", input);
         }
-        this.actionService.execute(Action.create("process", "process"), context);
+
     }
 
     @Override

@@ -8,19 +8,24 @@ import com.tj.sophie.core.IHandler;
 import com.tj.sophie.guice.Binding;
 import com.tj.sophie.guice.Handler;
 import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by mbp on 6/4/15.
  */
 public class Container {
+
+    public static final String JARS = "sophie-jars";
+    public static final String JOB_NAME = "sophie-configuration-name";
+
     private static Container ourInstance = new Container();
 
     public static Container getInstance() {
@@ -29,19 +34,49 @@ public class Container {
 
     private Injector injector;
 
+    private boolean initialized = false;
+    private Configuration configuration = null;
+    private Path jarPath;
+
 
     private Container() {
-        try {
-            this.initialize();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
     }
 
 
     public IActionService getActionService() {
         return this.injector.getInstance(IActionService.class);
+    }
+
+    public synchronized void initialize(Configuration configuration) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {
+        if (this.initialized) {
+            return;
+        }
+        this.initialized = true;
+        this.configuration = configuration;
+        this.jarPath = new Path(configuration.get(JARS));
+        this.initialize();
+    }
+
+
+    public static Path uploadToHDFS(Configuration configuration, String localPath) throws IOException {
+        File file = new File(localPath);
+        String local = file.getName();
+        FileSystem fs = FileSystem.get(configuration);
+        Path to = new Path(getJobCachePath(configuration), local);
+        fs.copyFromLocalFile(new Path(localPath), to);
+        return to;
+    }
+
+    private Path downloadToLocal(Path path) throws IOException {
+        FileSystem fs = FileSystem.get(this.configuration);
+        Path to = new Path("/tmp/hadoop-cache/", path.getName());
+        fs.copyToLocalFile(path, to);
+        return to;
+    }
+
+    public static Path getJobCachePath(Configuration configuration) {
+        Path root = new Path("/job_cache/", configuration.get(JOB_NAME) == null || configuration.get(JOB_NAME).trim().isEmpty() ? "default" : configuration.get(JOB_NAME).trim());
+        return root;
     }
 
     private void initialize() throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
@@ -80,16 +115,11 @@ public class Container {
 
 
     private List<Class<?>> loadClassMetadatas() throws IOException, ClassNotFoundException {
+
+        Path local = this.downloadToLocal(this.jarPath);
+
         List<Class<?>> result = new ArrayList<>();
-        String jarFilePath = this.getJarFilePath();
-        Logger.debug("jar path %s", jarFilePath);
-
-        File file = new File(jarFilePath);
-        Collection<File> files = FileUtils.listFiles(file.getParentFile(), null, true);
-        for (File x : files) {
-            Logger.debug("load path %s", x.getAbsolutePath());
-        }
-
+        String jarFilePath = local.toUri().getPath();
 
         List<JarEntry> entries = this.filter(new JarFile(jarFilePath));
         for (JarEntry entry : entries) {
@@ -99,6 +129,8 @@ public class Container {
             Class<?> clazz = this.getClass().getClassLoader().loadClass(name);
             result.add(clazz);
         }
+
+        FileUtils.forceDelete(new File(jarFilePath));
 
         return result;
     }
@@ -118,18 +150,5 @@ public class Container {
             result.add(jarEntry);
         }
         return result;
-
-    }
-
-    private String getJarFilePath() {
-        String path = Container.class.getResource("").getFile();
-        Logger.debug("resource path %s", path);
-        //Pattern pattern = Pattern.compile("^.*?file:(?<jar>[^!]*)!");
-        Pattern pattern = Pattern.compile("file:(?<path>.*)$");
-        Matcher matcher = pattern.matcher(path);
-        while (matcher.find()) {
-            return matcher.group("path");
-        }
-        return null;
     }
 }

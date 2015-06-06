@@ -41,9 +41,12 @@ public class MainModule extends AbstractModule {
             Key<Object> from = (Key<Object>) Key.get(fromclazz);
             Key<Object> to = (Key<Object>) Key.get(toclazz);
 
+            Logger.debug("from %s to %s", fromclazz.toString(), toclazz.toString());
+
             this.bind(from).to(to);
         }
         for (Class<IHandler> handler : this.handlerTypes) {
+            Logger.debug("handler %s", handler.toString());
             this.bind(handler).in(Singleton.class);
         }
         this.bindListener(Matchers.any(), new TypeListener() {

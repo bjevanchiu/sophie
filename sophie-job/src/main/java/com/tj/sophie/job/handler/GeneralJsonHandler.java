@@ -20,6 +20,9 @@ public class GeneralJsonHandler extends AbstractHandler {
     @Override
     protected void onExecute(IContext context) {
         JsonObject json = context.getVariable("json");
+        if (json == null) {
+            return;
+        }
         Map<String, String> map = new HashMap<>();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             String key = entry.getKey();
