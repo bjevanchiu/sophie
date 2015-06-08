@@ -99,4 +99,11 @@ public final class Context implements IContext {
     public Map<String, Object> getInvalidMap() {
         return this.invalidMap;
     }
+
+    @Override
+    public <T> void setCommon(String key, T value) {
+        this.resultMap.put(key, value);
+        this.errorMap.put(key, value);
+        this.invalidMap.put(key, value);
+    }
 }

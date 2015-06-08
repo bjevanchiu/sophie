@@ -33,4 +33,5 @@ public interface IContext {
 
     Map<String, Object> getInvalidMap();
 
+    <T> void setCommon(String key, T value);
 }

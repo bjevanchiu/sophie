@@ -7,7 +7,8 @@ import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-import org.apache.log4j.Logger;
+import com.tj.sophie.guice.Handler;
+import org.slf4j.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,6 +19,7 @@ import java.util.regex.Pattern;
 /**
  * Created by mbp on 6/8/15.
  */
+@Handler
 public class BingoLogHandler extends AbstractHandler {
     private Gson gson = new Gson();
     private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<level>\\w)+ *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<json>\\{.*\\})");
@@ -37,7 +39,10 @@ public class BingoLogHandler extends AbstractHandler {
 
     @Override
     protected void onExecute(IContext context) {
+
         String input = context.getInput();
+
+
         Matcher matcher = pattern.matcher(input);
         String jsonString = null;
         while (matcher.find()) {
@@ -54,14 +59,19 @@ public class BingoLogHandler extends AbstractHandler {
             long recordSID = Long.parseLong(recordSIDString);
             context.setResult("record_time", recordTime);
             context.setResult("record_pid", recordSID);
+
+            this.logger.info(String.format("json %s", jsonString));
+            this.logger.info(String.format("date %s", recordTimeString));
+            this.logger.info(String.format("ssid %s", recordSIDString));
+
         }
 
         if (jsonString != null && !jsonString.trim().isEmpty()) {
             JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
             context.setVariable("json", json);
-            this.logger.info(String.format("json %s", json.toString()));
             this.actionService.execute(Action.create("main", "general_json"), context);
         } else {
+            this.logger.info(String.format("Invalid input %s", input));
             context.setInvalid("input", context.getInput());
         }
     }

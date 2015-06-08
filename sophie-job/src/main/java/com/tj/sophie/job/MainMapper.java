@@ -45,20 +45,16 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
             actionService.execute(Action.create("main", "hello"), ctx);
         }
 
-
         String errorString = this.gson.toJson(ctx.getErrorMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        this.logger.info(String.format("errorString %s", errorString));
         context.write(new Text("error" + errorString), NullWritable.get());
 
         String resultString = this.gson.toJson(ctx.getResultMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        this.logger.info(String.format("resultString %s", resultString));
         context.write(new Text("result" + resultString), NullWritable.get());
 
         String invalidString = this.gson.toJson(ctx.getInvalidMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        this.logger.info(String.format("invalidString %s", invalidString));
         context.write(new Text("invalid" + invalidString), NullWritable.get());
     }
 }

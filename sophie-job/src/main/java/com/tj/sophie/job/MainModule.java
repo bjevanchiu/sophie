@@ -36,6 +36,7 @@ public class MainModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        Logger logger = Container.getLogger();
         for (Map.Entry<Class<?>, Class<?>> entry : mapper.entrySet()) {
             Class<?> fromclazz = entry.getKey();
             Class<?> toclazz = entry.getValue();
