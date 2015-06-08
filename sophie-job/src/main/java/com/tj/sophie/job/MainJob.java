@@ -16,10 +16,7 @@ import java.util.UUID;
  * Created by mbp on 6/5/15.
  */
 public class MainJob {
-    //^(?<date>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) (?<ssid>\d+) *(?<level>\w)+ *\[(?<class>.*?)\] *\(.*?\) *(?<processedFlag>processed:)?(?<json>\{.*\})
     public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-
-
         String input = args[0];
         String output = args[1];
         Job job = new Job();

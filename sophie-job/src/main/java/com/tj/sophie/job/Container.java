@@ -11,6 +11,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +47,10 @@ public class Container {
 
     public IActionService getActionService() {
         return this.injector.getInstance(IActionService.class);
+    }
+
+    public static Logger getLogger() {
+        return LoggerFactory.getLogger(Container.class);
     }
 
     public synchronized void initialize(Configuration configuration) throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException {

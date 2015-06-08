@@ -59,7 +59,7 @@ public abstract class AbstractHandler implements IHandler {
         this.onExecute(context);
     }
 
-    protected abstract void onExecute(IContext context);
-
     protected abstract void onInitialize();
+
+    protected abstract void onExecute(IContext context);
 }

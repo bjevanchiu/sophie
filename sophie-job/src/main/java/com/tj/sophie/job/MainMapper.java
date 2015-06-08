@@ -2,13 +2,14 @@ package com.tj.sophie.job;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Set;
  */
 public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
 
+    private Logger logger = Container.getLogger();
 
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -33,7 +35,11 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
         IActionService actionService = Container.getInstance().getActionService();
         IContext ctx = new com.tj.sophie.core.Context(value.toString());
 
-        actionService.execute(Action.create("mainjob", "mainjob"), ctx);
+        String path = ((FileSplit) context.getInputSplit()).getPath().getName();
+
+        this.logger.debug("input path is %s.", path);
+
+        //actionService.execute(Action.create("mainjob", "mainjob"), ctx);
 
         Map<String, Object> map = new HashMap<>();
         Set<Map.Entry<String, Object>> result = ctx.getResultEntries();

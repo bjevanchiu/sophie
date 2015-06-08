@@ -17,9 +17,8 @@ public final class Context implements IContext {
     public Context(String input) {
         this.input = input;
         if (input == null || input.trim().isEmpty()) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("input");
+            this.input = input.trim();
         }
-        this.input = input.trim();
     }
 
 
