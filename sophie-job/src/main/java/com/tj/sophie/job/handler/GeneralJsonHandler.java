@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
-import com.tj.sophie.job.service.Actions;
+import com.tj.sophie.job.Actions;
 
 import java.util.Map;
 

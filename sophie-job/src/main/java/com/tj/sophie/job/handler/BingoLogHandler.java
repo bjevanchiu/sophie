@@ -7,8 +7,8 @@ import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
+import com.tj.sophie.job.Actions;
 import com.tj.sophie.job.Constants;
-import com.tj.sophie.job.service.Actions;
 import org.slf4j.Logger;
 
 import java.text.ParseException;
@@ -72,6 +72,10 @@ public class BingoLogHandler extends AbstractHandler {
             context.setResult("record_time", recordTime);
             context.setResult("record_qsid", recordSID);
             this.actionService.execute(Actions.GeneralJson, context);
+
+
+            this.actionService.execute(Actions.GeneralProps, context);
+
         } else {
             context.setInvalid("record_time", recordTime);
             context.setInvalid("record_qsid", recordSID);

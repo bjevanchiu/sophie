@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-import com.tj.sophie.job.service.Actions;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -73,14 +72,18 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         }
         String errorString = this.gson.toJson(ctx.getErrorMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("error"), new Text(errorString));
-
+        if (!errorString.equalsIgnoreCase("{}")) {
+            context.write(new Text("error"), new Text(errorString));
+        }
         String resultString = this.gson.toJson(ctx.getResultMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("result"), new Text(resultString));
-
+        if (!resultString.equalsIgnoreCase("{}")) {
+            context.write(new Text("result"), new Text(resultString));
+        }
         String invalidString = this.gson.toJson(ctx.getInvalidMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("invalid"), new Text(invalidString));
+        if (!invalidString.equalsIgnoreCase("{}")) {
+            context.write(new Text("invalid"), new Text(invalidString));
+        }
     }
 }
