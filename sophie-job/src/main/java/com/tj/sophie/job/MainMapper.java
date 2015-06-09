@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.job.service.Actions;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -19,7 +18,7 @@ import java.util.Map;
 /**
  * Created by mbp on 6/5/15.
  */
-public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
+public class MainMapper extends Mapper<Object, Text, Text, Text> {
 
     private Logger logger = Container.getLogger();
     private Gson gson = new Gson();
@@ -74,14 +73,14 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
         }
         String errorString = this.gson.toJson(ctx.getErrorMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("error" + errorString), NullWritable.get());
+        context.write(new Text("error"), new Text(errorString));
 
         String resultString = this.gson.toJson(ctx.getResultMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("result" + resultString), NullWritable.get());
+        context.write(new Text("result"), new Text(resultString));
 
         String invalidString = this.gson.toJson(ctx.getInvalidMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("invalid" + invalidString), NullWritable.get());
+        context.write(new Text("invalid"), new Text(invalidString));
     }
 }

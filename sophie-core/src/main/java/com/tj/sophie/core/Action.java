@@ -16,14 +16,6 @@ public final class Action {
      */
     private String id;
 
-    public String getCategory() {
-        return category;
-    }
-
-    public String getId() {
-        return id;
-    }
-
     public Action(String category, String id) {
         if (category == null || category.trim().isEmpty()) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("category");
@@ -35,7 +27,6 @@ public final class Action {
         this.id = id.trim();
     }
 
-
     /**
      * 创建Action实例.
      *
@@ -45,6 +36,14 @@ public final class Action {
      */
     public static Action create(String category, String id) {
         return new Action(category, id);
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getId() {
+        return id;
     }
 
     @Override
