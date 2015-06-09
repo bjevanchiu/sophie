@@ -28,7 +28,7 @@ public class MainJob {
         job.setReducerClass(MainReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
-        job.setOutputFormatClass(RowOutputFormat.class);
+        job.setOutputFormatClass(DefaultOutputFormat.class);
         job.setNumReduceTasks(1);
         FileInputFormat.addInputPath(job, new Path(input));
         FileOutputFormat.setOutputPath(job, new Path(output));
