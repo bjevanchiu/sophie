@@ -43,9 +43,13 @@ class MainModule extends AbstractModule {
 
             Key<Object> from = (Key<Object>) Key.get(fromclazz);
             Key<Object> to = (Key<Object>) Key.get(toclazz);
+
+            logger.info(String.format("bind from %s to %s", fromclazz.toString(), toclazz.toString()));
+
             this.bind(from).to(to);
         }
         for (Class<IHandler> handler : this.handlerTypes) {
+            logger.info(String.format("bind handler %s", handler.toString()));
             this.bind(handler).in(Singleton.class);
         }
         this.bind(Logger.class).toInstance(LoggerFactory.getLogger(Container.class));

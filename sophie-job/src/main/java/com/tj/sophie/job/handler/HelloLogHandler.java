@@ -42,8 +42,8 @@ public class HelloLogHandler extends AbstractHandler {
     protected void onExecute(IContext context) {
         this.actionService.execute(Action.create("main", "general_filter"), context);
 
-        Boolean filted = context.getVariable(Constants.FILTED_FLAG);
-        if (filted != null && filted) {
+        boolean filted = context.getVariable(Constants.FILTED_FLAG);
+        if (filted) {
             return;
         }
 

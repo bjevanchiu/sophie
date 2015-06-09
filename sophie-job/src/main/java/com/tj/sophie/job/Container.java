@@ -48,6 +48,8 @@ public class Container {
     }
 
     private void initializeGuice(List<Class<?>> types) {
+
+
         MainModule mainModule = new MainModule();
 
         Map<Class<?>, Class<?>> mapper = new HashMap<>();
@@ -70,10 +72,13 @@ public class Container {
         }
         mainModule.initializeHandler(handlerTypes);
 
+        Logger logger = Container.getLogger();
+
         this.injector = Guice.createInjector(mainModule);
         IActionService actionService = this.injector.getInstance(IActionService.class);
         for (Class<IHandler> type : handlerTypes) {
             IHandler handler = this.injector.getInstance(type);
+            logger.info(String.format("register handler %s %s", handler.getAction().getCategory(), handler.getAction().getId()));
             actionService.register(handler);
         }
     }

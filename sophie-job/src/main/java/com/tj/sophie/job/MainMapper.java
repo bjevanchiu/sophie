@@ -7,7 +7,6 @@ import com.tj.sophie.core.IContext;
 import com.tj.sophie.job.helper.HadoopHelper;
 import com.tj.sophie.job.helper.JarFileHelper;
 import com.tj.sophie.job.service.Actions;
-import com.tj.sophie.job.service.ContentType;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -15,7 +14,6 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -34,11 +32,8 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
         String pathString = context.getConfiguration().get(Constants.JARS);
         Path hdfs = new Path(pathString);
         Path local = Constants.getLocalCachePath(hdfs);
-        File localFile = new File(local.toString());
-        if (!localFile.exists()) {
-            HadoopHelper helper = HadoopHelper.create(context.getConfiguration());
-            helper.copyHdfsToLocal(hdfs, local);
-        }
+        HadoopHelper helper = HadoopHelper.create(context.getConfiguration());
+        helper.copyHdfsToLocal(hdfs, local);
         try {
             JarFileHelper jarHelper = JarFileHelper.create(local.toString());
             Container.getInstance().initialize(jarHelper.getTypes());

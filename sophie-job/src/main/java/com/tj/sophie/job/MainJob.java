@@ -37,6 +37,7 @@ public class MainJob {
         {
             Path local = new Path(job.getJar());
             Path hdfs = Constants.getHdfsCachePath(local);
+            helper.delete(hdfs);
             helper.copyLocalToHdfs(local, hdfs);
             job.getConfiguration().set(Constants.JARS, hdfs.toString());
             caches.add(hdfs);
