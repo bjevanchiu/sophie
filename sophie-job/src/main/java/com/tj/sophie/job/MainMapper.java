@@ -5,13 +5,16 @@ import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-import org.apache.hadoop.conf.Configuration;
+import com.tj.sophie.job.helper.HadoopHelper;
+import com.tj.sophie.job.helper.JarFileHelper;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.slf4j.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
@@ -22,16 +25,36 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
 
     private Logger logger = Container.getLogger();
     private Gson gson = new Gson();
+    private IActionService actionService;
+
+    @Override
+    protected void setup(Context context) throws IOException, InterruptedException {
+        super.setup(context);
+        String pathString = context.getConfiguration().get(Constants.JARS);
+        Path hdfs = new Path(pathString);
+        Path local = Constants.getLocalCachePath(hdfs);
+        File localFile = new File(local.toString());
+        if (!localFile.exists()) {
+            HadoopHelper helper = HadoopHelper.create(context.getConfiguration());
+            helper.copyHdfsToLocal(hdfs, local);
+        }
+        try {
+            JarFileHelper jarHelper = JarFileHelper.create(local.toString());
+            Container.getInstance().initialize(jarHelper.getTypes());
+            this.actionService = Container.getInstance().getActionService();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        super.cleanup(context);
+    }
 
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-        Configuration configuration = context.getConfiguration();
-        try {
-            Container.getInstance().initialize(configuration);
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
         IActionService actionService = Container.getInstance().getActionService();
         IContext ctx = new com.tj.sophie.core.Context(value.toString());
 

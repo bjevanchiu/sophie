@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * Created by mbp on 6/4/15.
  */
-public class MainModule extends AbstractModule {
+class MainModule extends AbstractModule {
 
     private Map<Class<?>, Class<?>> mapper = new HashMap<>();
     private List<Class<IHandler>> handlerTypes = new ArrayList<>();

@@ -60,7 +60,7 @@ public final class ActionService implements IActionService {
         Collections.sort(list, new Comparator<IHandler>() {
             @Override
             public int compare(IHandler o1, IHandler o2) {
-                return o1.getLevel().compareTo(o2.getLevel());
+                return o2.getLevel().compareTo(o1.getLevel());
             }
         });
         this.handlers.put(action, list);
@@ -68,7 +68,7 @@ public final class ActionService implements IActionService {
 
     public synchronized void execute(Action action, IContext context) {
         if (action == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("verbId");
+            throw ExceptionHelper.ArgumentIsNullOrEmpty("action");
         }
         if (context == null) {
             throw ExceptionHelper.ArgumentIsNullOrEmpty("context");

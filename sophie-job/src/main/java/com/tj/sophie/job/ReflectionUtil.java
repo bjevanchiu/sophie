@@ -1,4 +1,4 @@
-package com.tj.sophie;
+package com.tj.sophie.job;
 
 import java.lang.annotation.Annotation;
 
