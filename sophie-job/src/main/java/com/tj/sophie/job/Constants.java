@@ -12,6 +12,8 @@ public class Constants {
     public static final String JOB_HDFS_CACHE_ROOT = "/job_cache";
     public static final String JOB_LOCAL_CACHE_ROOT = "/tmp/hadoop/job";
 
+    public static final String FILTED_FLAG = "filted_flag";
+
 
     public static Path getHdfsCachePath(Path local) {
         return new Path(new Path(Constants.JOB_HDFS_CACHE_ROOT), local.getName());

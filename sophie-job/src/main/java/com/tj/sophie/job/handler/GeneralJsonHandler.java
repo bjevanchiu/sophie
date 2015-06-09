@@ -4,9 +4,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.tj.sophie.core.AbstractHandler;
-import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
+import com.tj.sophie.job.service.Actions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class GeneralJsonHandler extends AbstractHandler {
     @Override
     protected void onInitialize() {
-        this.setAction(Action.create("main", "general_json"));
+        this.setAction(Actions.GeneralJson);
     }
 
     @Override

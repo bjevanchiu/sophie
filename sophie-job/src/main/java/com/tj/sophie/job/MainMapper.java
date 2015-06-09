@@ -2,11 +2,12 @@ package com.tj.sophie.job;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.job.helper.HadoopHelper;
 import com.tj.sophie.job.helper.JarFileHelper;
+import com.tj.sophie.job.service.Actions;
+import com.tj.sophie.job.service.ContentType;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -56,18 +57,25 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
         IActionService actionService = Container.getInstance().getActionService();
+
+        String input = value.toString();
+        if (input == null || input.trim().isEmpty()) {
+            return;
+        }
+
         IContext ctx = new com.tj.sophie.core.Context(value.toString());
 
         String path = ((FileSplit) context.getInputSplit()).getPath().getName();
 
         if (path.trim().toLowerCase().indexOf("bingo") != -1) {
-            ctx.setVariable("type", "bingo");
-            actionService.execute(Action.create("main", "bingo"), ctx);
+            ctx.setVariable("content_type", ContentType.BINGO);
+            actionService.execute(Actions.BingoLog, ctx);
         } else if (path.trim().toLowerCase().indexOf("hello") != -1) {
-            ctx.setVariable("type", "hello");
-            actionService.execute(Action.create("main", "hello"), ctx);
+            ctx.setVariable("content_type", ContentType.HELLO);
+            actionService.execute(Actions.HelloLog, ctx);
+        } else {
+            return;
         }
-
         String errorString = this.gson.toJson(ctx.getErrorMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
         context.write(new Text("error" + errorString), NullWritable.get());

@@ -4,10 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractHandler;
-import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
+import com.tj.sophie.job.Constants;
+import com.tj.sophie.job.service.Actions;
 import org.slf4j.Logger;
 
 import java.text.ParseException;
@@ -34,11 +35,18 @@ public class BingoLogHandler extends AbstractHandler {
 
     @Override
     protected void onInitialize() {
-        this.setAction(Action.create("main", "bingo"));
+        this.setAction(Actions.BingoLog);
     }
 
     @Override
     protected void onExecute(IContext context) {
+
+        this.actionService.execute(Actions.GeneralFilter, context);
+
+        Boolean filted = context.getVariable(Constants.FILTED_FLAG);
+        if (filted == null || filted) {
+            return;
+        }
 
         String input = context.getInput();
 
@@ -57,21 +65,15 @@ public class BingoLogHandler extends AbstractHandler {
             }
             String recordSIDString = matcher.group("ssid");
             long recordSID = Long.parseLong(recordSIDString);
-            context.setResult("record_time", recordTime);
-            context.setResult("record_pid", recordSID);
-
-            this.logger.info(String.format("json %s", jsonString));
-            this.logger.info(String.format("date %s", recordTimeString));
-            this.logger.info(String.format("ssid %s", recordSIDString));
-
+            context.setCommon("record_time", recordTime);
+            context.setCommon("record_pid", recordSID);
         }
 
         if (jsonString != null && !jsonString.trim().isEmpty()) {
             JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
             context.setVariable("json", json);
-            this.actionService.execute(Action.create("main", "general_json"), context);
+            this.actionService.execute(Actions.GeneralJson, context);
         } else {
-            this.logger.info(String.format("Invalid input %s", input));
             context.setInvalid("input", context.getInput());
         }
     }
