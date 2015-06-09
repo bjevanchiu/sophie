@@ -1,7 +1,8 @@
 package com.tj.sophie.job;
 
 
-import com.tj.sophie.job.helper.HadoopHelper;
+import com.google.gson.Gson;
+import com.tj.sophie.job.helper.JarFileHelper;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
@@ -32,30 +33,19 @@ public class MainJob {
         FileInputFormat.addInputPath(job, new Path(input));
         FileOutputFormat.setOutputPath(job, new Path(output));
 
-        HadoopHelper helper = HadoopHelper.create(job.getConfiguration());
-        List<Path> caches = new ArrayList<>();
-        {
-            Path local = new Path(job.getJar());
-            Path hdfs = Constants.getHdfsCachePath(local);
-            helper.delete(hdfs);
-            helper.copyLocalToHdfs(local, hdfs);
-            job.getConfiguration().set(Constants.JARS, hdfs.toString());
-            caches.add(hdfs);
+        JarFileHelper jarFileHelper = JarFileHelper.create(job.getJar());
+        List<String> typeStrings = new ArrayList<>();
+        List<Class<?>> types = jarFileHelper.getTypes();
+        for (Class<?> clazz : types) {
+            typeStrings.add(clazz.getName());
         }
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(typeStrings);
+        job.getConfiguration().set(Constants.JARS, jsonString);
 
         job.getConfiguration().set(Constants.JOB_NAME, UUID.randomUUID().toString());
 
         boolean result = job.waitForCompletion(true);
-
-        for (Path path : caches) {
-            helper.delete(path);
-        }
         System.exit(result ? 0 : 1);
     }
-
-    private static Path getHdfsPath(Path local) {
-        String name = local.getName();
-        return new Path(new Path(Constants.JOB_HDFS_CACHE_ROOT), name);
-    }
-
 }

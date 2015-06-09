@@ -4,10 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-import com.tj.sophie.job.helper.HadoopHelper;
-import com.tj.sophie.job.helper.JarFileHelper;
 import com.tj.sophie.job.service.Actions;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -15,6 +12,8 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,19 +28,21 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
-        String pathString = context.getConfiguration().get(Constants.JARS);
-        Path hdfs = new Path(pathString);
-        Path local = Constants.getLocalCachePath(hdfs);
-        HadoopHelper helper = HadoopHelper.create(context.getConfiguration());
-        helper.copyHdfsToLocal(hdfs, local);
-        try {
-            JarFileHelper jarHelper = JarFileHelper.create(local.toString());
-            Container.getInstance().initialize(jarHelper.getTypes());
-            this.actionService = Container.getInstance().getActionService();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        String jsonString = context.getConfiguration().get(Constants.JARS);
+        List<String> typeStrings = gson.fromJson(jsonString, new TypeToken<List<String>>() {
+        }.getType());
+        List<Class<?>> types = new ArrayList<>();
+        ClassLoader classloader = context.getConfiguration().getClassLoader();
+        for (String typeString : typeStrings) {
+            try {
+                types.add(classloader.loadClass(typeString));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }
+        Container.getInstance().initialize(types);
+        this.actionService = Container.getInstance().getActionService();
     }
 
     @Override
