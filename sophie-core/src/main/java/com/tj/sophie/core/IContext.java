@@ -32,6 +32,4 @@ public interface IContext {
     <T> void setInvalid(String key, T value);
 
     Map<String, Object> getInvalidMap();
-
-    <T> void setCommon(String key, T value);
 }

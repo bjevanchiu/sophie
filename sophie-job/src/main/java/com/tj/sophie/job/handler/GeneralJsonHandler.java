@@ -40,6 +40,8 @@ public class GeneralJsonHandler extends AbstractHandler {
                 } else if (primitive.isString()) {
                     map.put(key, primitive.getAsString());
                 }
+            } else if (instance.isJsonArray()) {
+                map.put(key, instance.toString());
             }
         }
 

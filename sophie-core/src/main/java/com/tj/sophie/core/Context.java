@@ -17,9 +17,6 @@ public final class Context implements IContext {
 
     public Context(String input) {
         this.input = input;
-        if (input == null || input.trim().isEmpty()) {
-            this.input = input.trim();
-        }
     }
 
 
@@ -98,12 +95,5 @@ public final class Context implements IContext {
     @Override
     public Map<String, Object> getInvalidMap() {
         return this.invalidMap;
-    }
-
-    @Override
-    public <T> void setCommon(String key, T value) {
-        this.resultMap.put(key, value);
-        this.errorMap.put(key, value);
-        this.invalidMap.put(key, value);
     }
 }

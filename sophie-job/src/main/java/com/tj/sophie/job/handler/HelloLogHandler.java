@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 @Handler
 public class HelloLogHandler extends AbstractHandler {
     private Gson gson = new Gson();
-    private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<level>\\w)+ *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<json>\\{.*\\})");
+    private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<level>\\w)+ *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<json>\\{.*\\})?");
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SS");
 
     @Inject
@@ -43,33 +43,38 @@ public class HelloLogHandler extends AbstractHandler {
         this.actionService.execute(Action.create("main", "general_filter"), context);
 
         Boolean filted = context.getVariable(Constants.FILTED_FLAG);
-        if (filted == null || filted) {
+        if (filted != null && filted) {
             return;
         }
+
         String input = context.getInput();
         Matcher matcher = pattern.matcher(input);
         String jsonString = null;
+        String recordTimeString = null;
+        String recordSIDString = null;
         while (matcher.find()) {
             jsonString = matcher.group("json");
-            String recordTimeString = matcher.group("date");
-            Date recordTime = null;
-            try {
-                recordTime = this.dateFormat.parse(recordTimeString);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e.getMessage());
-            }
-            String recordSIDString = matcher.group("ssid");
-            long recordSID = Long.parseLong(recordSIDString);
-            context.setCommon("record_time", recordTime);
-            context.setCommon("record_pid", recordSID);
+            recordTimeString = matcher.group("date");
+            recordSIDString = matcher.group("ssid");
         }
+        Date recordTime = null;
+        try {
+            recordTime = this.dateFormat.parse(recordTimeString);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage());
+        }
+        long recordSID = Long.parseLong(recordSIDString);
 
         if (jsonString != null && !jsonString.trim().isEmpty()) {
             JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
             context.setVariable("json", json);
-            this.actionService.execute(Action.create("main", "general_json"), context);
+            context.setResult("record_time", recordTime);
+            context.setResult("record_qsid", recordSID);
+            this.actionService.execute(Actions.GeneralJson, context);
         } else {
+            context.setInvalid("record_time", recordTime);
+            context.setInvalid("record_qsid", recordSID);
             context.setInvalid("input", context.getInput());
         }
     }

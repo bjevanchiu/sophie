@@ -2,6 +2,9 @@ package com.tj.sophie.job;
 
 import org.apache.hadoop.fs.Path;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created by mbp on 6/8/15.
  */
