@@ -12,4 +12,5 @@ public final class Actions {
     public static Action GeneralJson = Action.create("main", "general_json");
     public static Action GeneralProps = Action.create("main", "general_props");
     public static Action ProcessReasons = Action.create("main", "process_reasons");
+    public static Action GeneralDevs = Action.create("main", "general_devs");
 }
