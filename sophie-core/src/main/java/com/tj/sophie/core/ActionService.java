@@ -18,7 +18,7 @@ public final class ActionService implements IActionService {
 
     public synchronized void register(IHandler handler) {
         if (handler == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("handler");
+            throw ExceptionHelper.argumentIsNullOrEmpty("handler");
         }
         Action action = handler.getAction();
         List<IHandler> list = null;
@@ -43,7 +43,7 @@ public final class ActionService implements IActionService {
 
     public synchronized void unregister(IHandler handler) {
         if (handler == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("handler");
+            throw ExceptionHelper.argumentIsNullOrEmpty("handler");
         }
         Action action = handler.getAction();
         List<IHandler> list = null;
@@ -68,10 +68,10 @@ public final class ActionService implements IActionService {
 
     public synchronized void execute(Action action, IContext context) {
         if (action == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("action");
+            throw ExceptionHelper.argumentIsNullOrEmpty("action");
         }
         if (context == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("context");
+            throw ExceptionHelper.argumentIsNullOrEmpty("context");
         }
         List<IHandler> list = new ArrayList<>();
         if (this.handlers.containsKey(action)) {

@@ -18,10 +18,10 @@ public final class Action {
 
     public Action(String category, String id) {
         if (category == null || category.trim().isEmpty()) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("category");
+            throw ExceptionHelper.argumentIsNullOrEmpty("category");
         }
         if (id == null || id.trim().isEmpty()) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("id");
+            throw ExceptionHelper.argumentIsNullOrEmpty("id");
         }
         this.category = category.trim();
         this.id = id.trim();

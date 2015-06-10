@@ -9,9 +9,10 @@ import java.util.Map;
 public final class Context implements IContext {
 
     private Map<String, Object> variableMap = new HashMap<>();
-    private Map<String, Object> resultMap = new HashMap<>();
     private Map<String, Object> errorMap = new HashMap<>();
     private Map<String, Object> invalidMap = new HashMap<>();
+
+    private Map<String, Map<String, Object>> map = new HashMap<>();
 
     private String input = null;
 
@@ -41,21 +42,6 @@ public final class Context implements IContext {
     }
 
     @Override
-    public <T> T getResult(String key) {
-        return this.get(key, this.resultMap);
-    }
-
-    @Override
-    public <T> void setResult(String key, T value) {
-        this.set(key, value, this.resultMap);
-    }
-
-    @Override
-    public Map<String, Object> getResultMap() {
-        return this.resultMap;
-    }
-
-    @Override
     public <T> T getError(String key) {
         return this.get(key, this.errorMap);
     }
@@ -72,15 +58,12 @@ public final class Context implements IContext {
 
     @Override
     public <T> T getInvalid(String key) {
-        if (this.invalidMap.containsKey(key)) {
-            return (T) this.invalidMap.get(key);
-        }
-        return null;
+        return this.get(key, this.invalidMap);
     }
 
     @Override
     public <T> void setInvalid(String key, T value) {
-        this.invalidMap.put(key, value);
+        this.set(key, value, this.invalidMap);
     }
 
     @Override
@@ -88,15 +71,30 @@ public final class Context implements IContext {
         return this.invalidMap;
     }
 
+    @Override
+    public Map<String, Object> getMap(String key) {
+        key = key.trim();
+        if (!this.map.containsKey(key)) {
+            this.map.put(key, new HashMap<String, Object>());
+        }
+        return this.map.get(key);
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getMaps() {
+        return this.map;
+    }
 
     private <T> T get(String key, Map<String, Object> map) {
+        key = key.trim();
         if (map.containsKey(key)) {
             return (T) map.get(key);
         }
         return null;
     }
 
-    private <T> void set(String key, Object value, Map<String, Object> map) {
+    private void set(String key, Object value, Map<String, Object> map) {
+        key = key.trim();
         map.put(key, value);
     }
 }

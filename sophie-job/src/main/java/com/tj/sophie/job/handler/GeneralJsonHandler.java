@@ -26,7 +26,7 @@ public class GeneralJsonHandler extends AbstractHandler {
             return;
         }
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            context.setResult(entry.getKey(), entry.getValue());
+            context.setVariable(entry.getKey(), entry.getValue());
         }
     }
 }

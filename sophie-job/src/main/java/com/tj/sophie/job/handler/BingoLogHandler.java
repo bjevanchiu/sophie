@@ -43,7 +43,7 @@ public class BingoLogHandler extends AbstractHandler {
 
         this.actionService.execute(Actions.GeneralFilter, context);
 
-        Boolean filted = context.getVariable(Constants.FILTED_FLAG);
+        Boolean filted = context.getVariable(Constants.FILTERED_FLAG);
         if (filted != null && filted) {
             return;
         }
@@ -69,8 +69,8 @@ public class BingoLogHandler extends AbstractHandler {
         if (jsonString != null && !jsonString.trim().isEmpty()) {
             JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
             context.setVariable("json", json);
-            context.setResult("record_time", recordTime);
-            context.setResult("record_qsid", recordSID);
+            context.setVariable("record_time", recordTime);
+            context.setVariable("record_qsid", recordSID);
             this.actionService.execute(Actions.GeneralJson, context);
 
 

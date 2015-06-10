@@ -46,7 +46,7 @@ public class GeneralFilterHandler extends AbstractHandler {
                 || content.startsWith("x-forwarded-for")
                 || content.startsWith("x-real-ip")
                 || content.startsWith("user-agent")) {
-            context.setVariable(Constants.FILTED_FLAG, Boolean.TRUE);
+            context.setVariable(Constants.FILTERED_FLAG, Boolean.TRUE);
         }
     }
 }

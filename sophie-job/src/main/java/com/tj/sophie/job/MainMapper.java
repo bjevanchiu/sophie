@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by mbp on 6/5/15.
@@ -75,15 +76,19 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         if (!errorString.equalsIgnoreCase("{}")) {
             context.write(new Text("error"), new Text(errorString));
         }
-        String resultString = this.gson.toJson(ctx.getResultMap(), new TypeToken<Map<String, Object>>() {
-        }.getType());
-        if (!resultString.equalsIgnoreCase("{}")) {
-            context.write(new Text("result"), new Text(resultString));
-        }
         String invalidString = this.gson.toJson(ctx.getInvalidMap(), new TypeToken<Map<String, Object>>() {
         }.getType());
         if (!invalidString.equalsIgnoreCase("{}")) {
             context.write(new Text("invalid"), new Text(invalidString));
+        }
+        Map<String, Map<String, Object>> maps = ctx.getMaps();
+        Set<Map.Entry<String, Map<String, Object>>> mapEntries = maps.entrySet();
+        for (Map.Entry<String, Map<String, Object>> entry : mapEntries) {
+            String valueString = this.gson.toJson(entry.getValue(), new TypeToken<Map<String, Object>>() {
+            }.getType());
+            if (!valueString.equalsIgnoreCase("{}")) {
+                context.write(new Text(entry.getKey()), new Text(valueString));
+            }
         }
     }
 }

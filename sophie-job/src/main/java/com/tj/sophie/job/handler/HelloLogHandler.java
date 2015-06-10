@@ -8,8 +8,8 @@ import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
-import com.tj.sophie.job.Constants;
 import com.tj.sophie.job.Actions;
+import com.tj.sophie.job.Constants;
 import org.slf4j.Logger;
 
 import java.text.ParseException;
@@ -42,7 +42,7 @@ public class HelloLogHandler extends AbstractHandler {
     protected void onExecute(IContext context) {
         this.actionService.execute(Action.create("main", "general_filter"), context);
 
-        boolean filted = context.getVariable(Constants.FILTED_FLAG);
+        boolean filted = context.getVariable(Constants.FILTERED_FLAG);
         if (filted) {
             return;
         }
@@ -69,8 +69,8 @@ public class HelloLogHandler extends AbstractHandler {
         if (jsonString != null && !jsonString.trim().isEmpty()) {
             JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
             context.setVariable("json", json);
-            context.setResult("record_time", recordTime);
-            context.setResult("record_qsid", recordSID);
+            context.setVariable("record_time", recordTime);
+            context.setVariable("record_qsid", recordSID);
             this.actionService.execute(Actions.GeneralJson, context);
 
 
