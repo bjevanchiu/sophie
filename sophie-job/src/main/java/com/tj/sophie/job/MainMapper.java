@@ -10,10 +10,7 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by mbp on 6/5/15.
@@ -71,12 +68,12 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         } else {
             return;
         }
-        String errorString = this.gson.toJson(ctx.getErrorMap(), new TypeToken<Map<String, Object>>() {
+        String errorString = this.gson.toJson(new TreeMap(ctx.getErrorMap()), new TypeToken<Map<String, Object>>() {
         }.getType());
         if (!errorString.equalsIgnoreCase("{}")) {
             context.write(new Text("error"), new Text(errorString));
         }
-        String invalidString = this.gson.toJson(ctx.getInvalidMap(), new TypeToken<Map<String, Object>>() {
+        String invalidString = this.gson.toJson(new TreeMap(ctx.getInvalidMap()), new TypeToken<Map<String, Object>>() {
         }.getType());
         if (!invalidString.equalsIgnoreCase("{}")) {
             context.write(new Text("invalid"), new Text(invalidString));
@@ -84,7 +81,7 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         Map<String, Map<String, Object>> maps = ctx.getMaps();
         Set<Map.Entry<String, Map<String, Object>>> mapEntries = maps.entrySet();
         for (Map.Entry<String, Map<String, Object>> entry : mapEntries) {
-            String valueString = this.gson.toJson(entry.getValue(), new TypeToken<Map<String, Object>>() {
+            String valueString = this.gson.toJson(new TreeMap(entry.getValue()), new TypeToken<Map<String, Object>>() {
             }.getType());
             if (!valueString.equalsIgnoreCase("{}")) {
                 context.write(new Text(entry.getKey()), new Text(valueString));

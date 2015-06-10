@@ -30,7 +30,12 @@ public class MainJob {
         job.setOutputValueClass(Text.class);
         job.setOutputFormatClass(DefaultOutputFormat.class);
         job.setNumReduceTasks(1);
-        FileInputFormat.addInputPath(job, new Path(input));
+
+        String[] inputs = input.split(";");
+
+        for (String file : inputs) {
+            FileInputFormat.addInputPath(job, new Path(file));
+        }
         FileOutputFormat.setOutputPath(job, new Path(output));
 
         JarFileHelper jarFileHelper = JarFileHelper.create(job.getJar());

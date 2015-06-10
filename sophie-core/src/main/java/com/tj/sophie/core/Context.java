@@ -63,7 +63,8 @@ public final class Context implements IContext {
 
     @Override
     public <T> void setInvalid(String key, T value) {
-        this.set(key, value, this.invalidMap);
+            key = key.trim();
+            this.invalidMap.put(key, value);
     }
 
     @Override
@@ -84,6 +85,7 @@ public final class Context implements IContext {
     public Map<String, Map<String, Object>> getMaps() {
         return this.map;
     }
+
 
     private <T> T get(String key, Map<String, Object> map) {
         key = key.trim();
