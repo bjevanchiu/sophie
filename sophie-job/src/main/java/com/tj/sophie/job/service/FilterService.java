@@ -1,5 +1,6 @@
 package com.tj.sophie.job.service;
 
+import com.google.gson.JsonObject;
 import com.tj.sophie.core.AbstractService;
 import com.tj.sophie.guice.Binding;
 import com.tj.sophie.job.helper.Helper;
@@ -66,6 +67,14 @@ public class FilterService extends AbstractService implements IFilterService {
                     || content.startsWith("out:")) {
                 return true;
             }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean acceptEvent(String event, JsonObject jsonObject) {
+        if (jsonObject.has("eventId")) {
+            return Helper.equalsIgnoreCase(event, jsonObject.get("eventId").getAsString());
         }
         return false;
     }

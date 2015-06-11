@@ -15,4 +15,11 @@ public final class Helper {
     public static boolean isNullOrEmpty(String x) {
         return x == null || x.trim().isEmpty();
     }
+
+    public static boolean equalsIgnoreCase(String x, String y) {
+        if (x == null || y == null) {
+            return false;
+        }
+        return x.equalsIgnoreCase(y);
+    }
 }
