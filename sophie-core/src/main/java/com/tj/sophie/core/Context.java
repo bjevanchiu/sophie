@@ -27,15 +27,12 @@ public final class Context implements IContext {
 
     @Override
     public <T> T getVariable(String key) {
-        if (this.variableMap.containsKey(key)) {
-            return (T) variableMap.get(key);
-        }
-        return null;
+        return this.get(key, this.variableMap);
     }
 
     @Override
     public <T> void setVariable(String key, T value) {
-        this.variableMap.put(key, value);
+        this.set(key, value, this.variableMap);
     }
 
     @Override
@@ -45,15 +42,12 @@ public final class Context implements IContext {
 
     @Override
     public <T> T getResult(String key) {
-        if (this.resultMap.containsKey(key)) {
-            return (T) this.resultMap.get(key);
-        }
-        return null;
+        return this.get(key, this.resultMap);
     }
 
     @Override
     public <T> void setResult(String key, T value) {
-        this.resultMap.put(key, value);
+        this.set(key, value, this.resultMap);
     }
 
     @Override
@@ -63,15 +57,12 @@ public final class Context implements IContext {
 
     @Override
     public <T> T getError(String key) {
-        if (this.errorMap.containsKey(key)) {
-            return (T) this.errorMap.get(key);
-        }
-        return null;
+        return this.get(key, this.errorMap);
     }
 
     @Override
     public <T> void setError(String key, T value) {
-        this.errorMap.put(key, value);
+        this.set(key, value, this.errorMap);
     }
 
     @Override
@@ -95,5 +86,17 @@ public final class Context implements IContext {
     @Override
     public Map<String, Object> getInvalidMap() {
         return this.invalidMap;
+    }
+
+
+    private <T> T get(String key, Map<String, Object> map) {
+        if (map.containsKey(key)) {
+            return (T) map.get(key);
+        }
+        return null;
+    }
+
+    private <T> void set(String key, Object value, Map<String, Object> map) {
+        map.put(key, value);
     }
 }
