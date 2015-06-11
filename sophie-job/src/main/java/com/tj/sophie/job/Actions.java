@@ -14,4 +14,5 @@ public final class Actions {
     public static Action ProcessReasons = Action.create("main", "process_reasons");
     public static Action GeneralDevs = Action.create("main", "general_devs");
     public static Action GeneralPs = Action.create("main", "general_ps");
+    public static Action CsvAdaptor = Action.create("main", "csv_adaptor");
 }
