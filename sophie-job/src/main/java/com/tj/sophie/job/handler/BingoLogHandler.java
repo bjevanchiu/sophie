@@ -52,20 +52,28 @@ public class BingoLogHandler extends AbstractHandler {
             ContentType contentType = (ContentType) context.getVariable("content_type");
             JsonObject jsonObject = this.generalJsonService.parse(contentType, input);
             if (jsonObject != null) {
+                if (this.filterService.acceptEvent("app_process_error", jsonObject)
+                        || this.filterService.acceptEvent("checker", jsonObject)
+                        || this.filterService.acceptEvent("devs", jsonObject)
+                        || this.filterService.acceptEvent("dns_error", jsonObject)
+                        || this.filterService.acceptEvent("network_error", jsonObject)
+                        || this.filterService.acceptEvent("process", jsonObject)
+                        || this.filterService.acceptEvent("props", jsonObject)
+                        || this.filterService.acceptEvent("ps", jsonObject)
+                        || this.filterService.acceptEvent("release", jsonObject)) {
+                    return;
+                }
                 if (contentType == ContentType.BINGO) {
                     if (jsonObject.has("reasons") && jsonObject.has("eventId")) {
                         JsonObject reasons = jsonObject.get("reasons").getAsJsonObject();
                         jsonObject.remove("reasons");
                         String event = jsonObject.get("eventId").getAsString();
-
-                        context.setVariable("event", event);
                         context.setVariable("reasons_json", reasons);
                         this.actionService.execute(Actions.ProcessReasons, context);
                     } else {
                         context.setError("reasons", input);
                     }
                 }
-
                 for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                     context.getMap("result").put(entry.getKey(), entry.getValue());
                 }
