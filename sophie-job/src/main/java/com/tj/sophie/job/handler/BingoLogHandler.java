@@ -68,8 +68,6 @@ public class BingoLogHandler extends AbstractHandler {
                         JsonObject reasons = jsonObject.get("reasons").getAsJsonObject();
                         jsonObject.remove("reasons");
                         String event = jsonObject.get("eventId").getAsString();
-
-                        context.setVariable("event", event);
                         context.setVariable("reasons_json", reasons);
                         this.actionService.execute(Actions.ProcessReasons, context);
                     } else {
