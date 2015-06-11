@@ -1,7 +1,10 @@
-package com.tj.sophie.core;
+package com.tj.sophie.job;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.tj.sophie.core.*;
 import com.tj.sophie.guice.Binding;
+import org.slf4j.Logger;
 
 import java.util.*;
 
@@ -14,11 +17,14 @@ import java.util.*;
 @Binding(from = IActionService.class, to = ActionService.class)
 public final class ActionService implements IActionService {
 
+    @Inject
+    private Logger logger;
+
     private Map<Action, List<IHandler>> handlers = new HashMap<>();
 
     public synchronized void register(IHandler handler) {
         if (handler == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("handler");
+            throw ExceptionHelper.argumentIsNullOrEmpty("handler");
         }
         Action action = handler.getAction();
         List<IHandler> list = null;
@@ -43,7 +49,7 @@ public final class ActionService implements IActionService {
 
     public synchronized void unregister(IHandler handler) {
         if (handler == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("handler");
+            throw ExceptionHelper.argumentIsNullOrEmpty("handler");
         }
         Action action = handler.getAction();
         List<IHandler> list = null;
@@ -68,18 +74,26 @@ public final class ActionService implements IActionService {
 
     public synchronized void execute(Action action, IContext context) {
         if (action == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("action");
+            throw ExceptionHelper.argumentIsNullOrEmpty("action");
         }
         if (context == null) {
-            throw ExceptionHelper.ArgumentIsNullOrEmpty("context");
+            throw ExceptionHelper.argumentIsNullOrEmpty("context");
         }
         List<IHandler> list = new ArrayList<>();
         if (this.handlers.containsKey(action)) {
             list = this.handlers.get(action);
         }
+
+
         if (!list.isEmpty()) {
             for (IHandler handler : list) {
+                this.logger.info(String.format("handler executing %s %s %s ",
+                        handler.getAction().getCategory(), handler.getAction().getId(),
+                        handler.getClass().toString()));
                 handler.execute(context);
+                this.logger.info(String.format("handler executed %s %s %s ",
+                        handler.getAction().getCategory(), handler.getAction().getId(),
+                        handler.getClass().toString()));
             }
         }
     }
@@ -87,5 +101,19 @@ public final class ActionService implements IActionService {
     @Override
     public void execute(String category, String id, IContext context) {
         this.execute(Action.create(category, id), context);
+    }
+
+
+    public void printHandler(Action action) {
+        if (action == null) {
+            throw ExceptionHelper.argumentIsNullOrEmpty("action");
+        }
+        List<IHandler> list = new ArrayList<>();
+        if (this.handlers.containsKey(action)) {
+            list = this.handlers.get(action);
+        }
+        for (IHandler handler : list) {
+            this.logger.info(String.format("output handler by action %s %s %s", action.getCategory(), action.getId(), handler.getClass().toString()));
+        }
     }
 }

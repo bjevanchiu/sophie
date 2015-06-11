@@ -1,21 +1,22 @@
 package com.tj.sophie.job.handler;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractHandler;
-import com.tj.sophie.core.Action;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
-import com.tj.sophie.job.Constants;
-import com.tj.sophie.job.service.Actions;
+import com.tj.sophie.job.Actions;
+import com.tj.sophie.job.ContentType;
+import com.tj.sophie.job.service.IFilterService;
+import com.tj.sophie.job.service.IGeneralJsonService;
 import org.slf4j.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Matcher;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -32,6 +33,11 @@ public class HelloLogHandler extends AbstractHandler {
 
     @Inject
     private IActionService actionService;
+    @Inject
+    private IFilterService filterService;
+
+    @Inject
+    private IGeneralJsonService generalJsonService;
 
     @Override
     protected void onInitialize() {
@@ -40,45 +46,24 @@ public class HelloLogHandler extends AbstractHandler {
 
     @Override
     protected void onExecute(IContext context) {
-        this.actionService.execute(Action.create("main", "general_filter"), context);
-
-        boolean filted = context.getVariable(Constants.FILTED_FLAG);
-        if (filted) {
-            return;
-        }
+        this.actionService.execute(Actions.GeneralFilter, context);
 
         String input = context.getInput();
-        Matcher matcher = pattern.matcher(input);
-        String jsonString = null;
-        String recordTimeString = null;
-        String recordSIDString = null;
-        while (matcher.find()) {
-            jsonString = matcher.group("json");
-            recordTimeString = matcher.group("date");
-            recordSIDString = matcher.group("ssid");
+        boolean filtered = this.filterService.accept(input);
+        if (filtered) {
+            return;
         }
-        Date recordTime = null;
         try {
-            recordTime = this.dateFormat.parse(recordTimeString);
+            JsonObject jsonObject = this.generalJsonService.parse((ContentType) context.getVariable("content_type"), input);
+            if (jsonObject != null) {
+                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+                    context.getMap("result").put(entry.getKey(), entry.getValue());
+                }
+            } else {
+                context.setInvalid("hello", input);
+            }
         } catch (ParseException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage());
-        }
-        long recordSID = Long.parseLong(recordSIDString);
-
-        if (jsonString != null && !jsonString.trim().isEmpty()) {
-            JsonObject json = this.gson.fromJson(jsonString, JsonObject.class);
-            context.setVariable("json", json);
-            context.setResult("record_time", recordTime);
-            context.setResult("record_qsid", recordSID);
-            this.actionService.execute(Actions.GeneralJson, context);
-            this.actionService.execute(Actions.Executed, context);
-            
-            
-        } else {
-            context.setInvalid("record_time", recordTime);
-            context.setInvalid("record_qsid", recordSID);
-            context.setInvalid("input", context.getInput());
+            context.setError("generalJson", input);
         }
     }
 }

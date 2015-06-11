@@ -4,22 +4,18 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-import com.tj.sophie.job.service.Actions;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by mbp on 6/5/15.
  */
-public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
+public class MainMapper extends Mapper<Object, Text, Text, Text> {
 
     private Logger logger = Container.getLogger();
     private Gson gson = new Gson();
@@ -71,16 +67,24 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
         } else {
             return;
         }
-        String errorString = this.gson.toJson(ctx.getErrorMap(), new TypeToken<Map<String, Object>>() {
+        String errorString = this.gson.toJson(new TreeMap(ctx.getErrorMap()), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("error" + errorString), NullWritable.get());
-
-        String resultString = this.gson.toJson(ctx.getResultMap(), new TypeToken<Map<String, Object>>() {
+        if (!errorString.equalsIgnoreCase("{}")) {
+            context.write(new Text("error"), new Text(errorString));
+        }
+        String invalidString = this.gson.toJson(new TreeMap(ctx.getInvalidMap()), new TypeToken<Map<String, Object>>() {
         }.getType());
-        context.write(new Text("result" + resultString), NullWritable.get());
-
-        String invalidString = this.gson.toJson(ctx.getInvalidMap(), new TypeToken<Map<String, Object>>() {
-        }.getType());
-        context.write(new Text("invalid" + invalidString), NullWritable.get());
+        if (!invalidString.equalsIgnoreCase("{}")) {
+            context.write(new Text("invalid"), new Text(invalidString));
+        }
+        Map<String, Map<String, Object>> maps = ctx.getMaps();
+        Set<Map.Entry<String, Map<String, Object>>> mapEntries = maps.entrySet();
+        for (Map.Entry<String, Map<String, Object>> entry : mapEntries) {
+            String valueString = this.gson.toJson(new TreeMap(entry.getValue()), new TypeToken<Map<String, Object>>() {
+            }.getType());
+            if (!valueString.equalsIgnoreCase("{}")) {
+                context.write(new Text(entry.getKey()), new Text(valueString));
+            }
+        }
     }
 }

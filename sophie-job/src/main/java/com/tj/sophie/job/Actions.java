@@ -1,4 +1,4 @@
-package com.tj.sophie.job.service;
+package com.tj.sophie.job;
 
 import com.tj.sophie.core.Action;
 
@@ -10,6 +10,7 @@ public final class Actions {
     public static Action HelloLog = Action.create("main", "hello");
     public static Action GeneralFilter = Action.create("main", "general_filter");
     public static Action GeneralJson = Action.create("main", "general_json");
-    public static Action Executed = Action.create("main", "executed");
-    
+    public static Action GeneralProps = Action.create("main", "general_props");
+    public static Action ProcessReasons = Action.create("main", "process_reasons");
+    public static Action GeneralDevs = Action.create("main", "general_devs");
 }

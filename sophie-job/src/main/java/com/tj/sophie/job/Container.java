@@ -19,24 +19,22 @@ import java.util.Map;
  */
 public class Container {
     private static Container ourInstance = new Container();
-
-    public static Container getInstance() {
-        return ourInstance;
-    }
-
     private Injector injector;
-
     private boolean initialized = false;
 
     private Container() {
     }
 
-    public IActionService getActionService() {
-        return this.injector.getInstance(IActionService.class);
+    public static Container getInstance() {
+        return ourInstance;
     }
 
     public static Logger getLogger() {
         return LoggerFactory.getLogger(Container.class);
+    }
+
+    public IActionService getActionService() {
+        return this.injector.getInstance(IActionService.class);
     }
 
     public synchronized void initialize(List<Class<?>> types) {

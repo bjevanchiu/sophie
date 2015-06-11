@@ -15,12 +15,6 @@ public interface IContext {
 
     Map<String, Object> getVariableMap();
 
-    <T> T getResult(String key);
-
-    <T> void setResult(String key, T value);
-
-    Map<String, Object> getResultMap();
-
     <T> T getError(String key);
 
     <T> void setError(String key, T value);
@@ -32,4 +26,9 @@ public interface IContext {
     <T> void setInvalid(String key, T value);
 
     Map<String, Object> getInvalidMap();
+
+    Map<String, Object> getMap(String key);
+
+    Map<String, Map<String, Object>> getMaps();
+
 }

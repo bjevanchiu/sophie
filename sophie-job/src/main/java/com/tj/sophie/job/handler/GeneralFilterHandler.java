@@ -5,7 +5,7 @@ import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
 import com.tj.sophie.job.Constants;
-import com.tj.sophie.job.service.Actions;
+import com.tj.sophie.job.Actions;
 import org.slf4j.Logger;
 
 import java.util.regex.Matcher;
@@ -46,7 +46,7 @@ public class GeneralFilterHandler extends AbstractHandler {
                 || content.startsWith("x-forwarded-for")
                 || content.startsWith("x-real-ip")
                 || content.startsWith("user-agent")) {
-            context.setVariable(Constants.FILTED_FLAG, Boolean.TRUE);
+            context.setVariable(Constants.FILTERED_FLAG, Boolean.TRUE);
         }
     }
 }

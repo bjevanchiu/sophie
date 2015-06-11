@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
-import com.tj.sophie.job.service.Actions;
+import com.tj.sophie.job.Actions;
 
 import java.util.Map;
 
@@ -27,7 +27,7 @@ public class GeneralJsonHandler extends AbstractHandler {
         }
         
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            context.setResult(entry.getKey(), entry.getValue());
+            context.setVariable(entry.getKey(), entry.getValue());
         }
     }
 }
