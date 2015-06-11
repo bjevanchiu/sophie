@@ -29,8 +29,7 @@ public class MainMapper extends Mapper<Object, Text, Text, NullWritable> {
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
         String jsonString = context.getConfiguration().get(Constants.JARS);
-        List<String> typeStrings = gson.fromJson(jsonString, new TypeToken<List<String>>() {
-        }.getType());
+        List<String> typeStrings = gson.fromJson(jsonString, new TypeToken<List<String>>() {}.getType());
         List<Class<?>> types = new ArrayList<>();
         ClassLoader classloader = context.getConfiguration().getClassLoader();
         for (String typeString : typeStrings) {

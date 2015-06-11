@@ -10,4 +10,6 @@ public final class Actions {
     public static Action HelloLog = Action.create("main", "hello");
     public static Action GeneralFilter = Action.create("main", "general_filter");
     public static Action GeneralJson = Action.create("main", "general_json");
+    public static Action Executed = Action.create("main", "executed");
+    
 }
