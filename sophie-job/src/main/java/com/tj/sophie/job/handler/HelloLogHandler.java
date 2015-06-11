@@ -57,12 +57,12 @@ public class HelloLogHandler extends AbstractHandler {
             JsonObject jsonObject = this.generalJsonService.parse((ContentType) context.getVariable("content_type"), input);
             if (jsonObject != null) {
 
-
-
-
-                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-                    context.getMap("result").put(entry.getKey(), entry.getValue());
-                }
+            	context.setVariable("deliver", jsonObject);
+            	this.actionService.execute(Actions.GeneralDeliver, context);
+//            	
+//                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+//                    context.getMap("result").put(entry.getKey(), entry.getValue());
+//                }
             } else {
                 context.setInvalid("hello", input);
             }
