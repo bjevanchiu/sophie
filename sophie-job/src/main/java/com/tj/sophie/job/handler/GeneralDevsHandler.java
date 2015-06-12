@@ -59,7 +59,7 @@ public class GeneralDevsHandler extends AbstractHandler {
 		Matcher matcher = pattern.matcher(input);
 		while (matcher.find()) {
 			String devsContent = matcher.group("devs");
-			String lines[] = devsContent.split("\\n");
+			String lines[] = devsContent.split("\\\\n");
 			JsonArray jsonArrayDevs = new JsonArray();
 			for (String line : lines) {
 				try {
