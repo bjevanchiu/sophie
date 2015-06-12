@@ -73,13 +73,12 @@ public class GeneralDevsHandler extends AbstractHandler {
 							+ arr[arr.length - 2]);
 					dev.addProperty("name", name);
 					jsonArrayDevs.add(dev);
-					context.setVariable("devs", jsonArrayDevs);
 				} catch (Exception e) {
 					logger.debug("GeneralDevsHandler:ProcessRubyDevs::"
 							+ e.toString());
 				}
 			}
-
+			context.setVariable("devs", jsonArrayDevs);
 		}
 	}
 
@@ -110,13 +109,12 @@ public class GeneralDevsHandler extends AbstractHandler {
 								+ arr[arr.length - 2]);
 						dev.addProperty("name", name);
 						jsonArrayDevs.add(dev);
-						context.setVariable("devs", jsonArrayDevs);
 					} catch (Exception e) {
 						logger.debug("GeneralDevsHandler:processBingoDevs::"
 								+ e.toString());
 					}
 				}
-
+				context.setVariable("devs", jsonArrayDevs);
 			} else {
 				context.setError("devs", context.getInput());
 			}
