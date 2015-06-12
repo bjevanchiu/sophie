@@ -1,8 +1,10 @@
 package com.tj.sophie.job.handler;
 
-import java.util.HashMap;
-import java.util.Map;
 
+import java.util.Arrays;
+import java.util.List;
+
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,6 +18,9 @@ import com.tj.sophie.job.Actions;
  */
 @Handler
 public class DevelerHandler extends AbstractHandler {
+	
+	private Gson gson = new Gson();
+	
 	@Override
 	protected void onInitialize() {
 		this.setAction(Actions.GeneralDeliver);
@@ -32,9 +37,22 @@ public class DevelerHandler extends AbstractHandler {
 			context.setError("deliver", deliverJsonObj);
 			return;
 		}
-		JsonObject requestObj = deliverJsonObj.get("request").getAsJsonObject();
-		JsonObject responseObj = deliverJsonObj.get("response")
-				.getAsJsonObject();
+		
+		JsonObject requestObj = null;
+		JsonObject responseObj = null;
+		
+		boolean isVersion = true;
+		String input = context.getInput();
+		if(input.contains("\"version\"")){
+			requestObj = deliverJsonObj.get("request").getAsJsonObject();
+			responseObj = deliverJsonObj.get("response").getAsJsonObject();
+		}else{
+			String request = deliverJsonObj.get("request").getAsString();
+			String response =  deliverJsonObj.get("response").getAsString();
+			requestObj = gson.fromJson(request, JsonObject.class);
+			responseObj = gson.fromJson(response, JsonObject.class);
+			isVersion = false;
+		}
 		deliverJsonObj.remove("request");
 		deliverJsonObj.remove("response");
 		// 遍历循环 方案号
@@ -81,13 +99,23 @@ public class DevelerHandler extends AbstractHandler {
 					solutionObj.add("version", deliverJsonObj.get("version"));
 				}
 				if(deliverJsonObj.has("defend_detail")){
-					solutionObj.add("defend_detail", deliverJsonObj.get("defend_detail"));
+					JsonObject defendTailJsonObj = null;
+					if(isVersion){
+						defendTailJsonObj = deliverJsonObj.get("defend_detail").getAsJsonObject();
+					}else{
+						String defend_detail = deliverJsonObj.get("defend_detail").getAsString();
+						defendTailJsonObj = gson.fromJson(defend_detail, JsonObject.class);
+					}
+					solutionObj.add("defend_detail", defendTailJsonObj);
 				}
 				delivers.add(solutionObj);
 			}
-			context.getMap("result").put("delivers", delivers);
 		}
-		
+		if(delivers!=null && delivers.size()>0 && delivers.get(0)!=null){
+			context.getMap("result").put("delivers", delivers);
+		}else{
+			context.setError("delivers", context.getInput());
+		}
 	}
 
 	private JsonObject toJsonObjectByKey(JsonObject sourceJsonObject,
