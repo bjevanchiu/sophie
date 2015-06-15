@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -67,14 +69,12 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         } else {
             return;
         }
-        String errorString = this.gson.toJson(new TreeMap(ctx.getErrorMap()), new TypeToken<Map<String, Object>>() {
-        }.getType());
-        if (!errorString.equalsIgnoreCase("{}")) {
+        String errorString = ctx.getError("delivers");
+        if (StringUtils.isNotEmpty(errorString)) {
             context.write(new Text("error"), new Text(errorString));
         }
-        String invalidString = this.gson.toJson(new TreeMap(ctx.getInvalidMap()), new TypeToken<Map<String, Object>>() {
-        }.getType());
-        if (!invalidString.equalsIgnoreCase("{}")) {
+        String invalidString = ctx.getInvalid("hello");
+        if (StringUtils.isNotEmpty(invalidString)) {
             context.write(new Text("invalid"), new Text(invalidString));
         }
         Map<String, Map<String, Object>> maps = ctx.getMaps();

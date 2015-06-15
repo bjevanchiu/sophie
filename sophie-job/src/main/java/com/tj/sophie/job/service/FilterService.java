@@ -59,6 +59,8 @@ public class FilterService extends AbstractService implements IFilterService {
             content = content.trim();
             if (content.startsWith("收到日志")
                     || content.startsWith("种子日志")
+                    || content.startsWith("虚拟机检测")
+                    || content.startsWith("是否易打工")
                     || content.startsWith("x-forwarded-for")
                     || content.startsWith("x-real-ip")
                     || content.startsWith("user-agent")
