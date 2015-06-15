@@ -67,6 +67,9 @@ public class GeneralPsHandler extends AbstractHandler {
 					JsonObject ps = new JsonObject();
 					Entry<String, JsonElement> psInfo = it.next();
 					String line = psInfo.getValue().getAsString();
+					if(line.startsWith("USER")){//去掉ps结果的表头
+						continue;
+					}
 					String arr[] = line.split("\\s+");
 					String name = arr[arr.length - 1];
 					String status = arr[arr.length - 2];
