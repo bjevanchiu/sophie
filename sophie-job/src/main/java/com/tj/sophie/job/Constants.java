@@ -19,6 +19,8 @@ public class Constants {
 
     public static final String FILTERED_FLAG = "filted_flag";
 
+    public static final String JSON_LIST = "json_list";
+
     public static Path getHdfsCachePath(Path local) {
         return new Path(new Path(Constants.JOB_HDFS_CACHE_ROOT), local.getName());
     }

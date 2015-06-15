@@ -8,7 +8,6 @@ import com.tj.sophie.job.Actions;
 import com.tj.sophie.job.model.SeedEventHistoryCSVFormatter;
 import com.tj.sophie.job.service.IGeneralCSVService;
 
-import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -34,8 +33,10 @@ public class SeedEventHistoryCSVHandler extends AbstractHandler {
         try {
             SeedEventHistoryCSVFormatter seedEventHistoryCSVFormatter = csvService.transfer(SeedEventHistoryCSVFormatter.class, result);
             if(seedEventHistoryCSVFormatter != null){
-                context.setVariable(seedEventHistoryCSVFormatter.getKey(), seedEventHistoryCSVFormatter.getExtractCSV());
+                context.setError("seed_event_histories_csv", seedEventHistoryCSVFormatter.getExtractCSV());
+                context.getMap("csv").put(seedEventHistoryCSVFormatter.getKey(), seedEventHistoryCSVFormatter.getExtractCSV());
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
