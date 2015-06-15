@@ -19,6 +19,10 @@ public class Constants {
 
     public static final String FILTERED_FLAG = "filted_flag";
 
+    public final class keys{
+        public static final String EVENTS = "events";
+    }
+
     public static Path getHdfsCachePath(Path local) {
         return new Path(new Path(Constants.JOB_HDFS_CACHE_ROOT), local.getName());
     }
