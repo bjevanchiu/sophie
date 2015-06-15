@@ -30,9 +30,7 @@ public class GeneralDevsHandler extends AbstractHandler {
 			processBingoDevs(context);
 		} else if(contentType.equals(ContentType.HELLO)){
 			processHelloDevs(context);
-		} else{
-			ProcessRubyDevs(context);
-		}
+		} 
 
 	}
 
@@ -41,12 +39,20 @@ public class GeneralDevsHandler extends AbstractHandler {
 		if (jsonObject == null) {
 			return;
 		}
+		
+		JsonObject request = null;
+		if(jsonObject.has("request")){
+			request = jsonObject.getAsJsonObject("request");
+		}
+		if(request == null){
+			return;
+		}
 		JsonArray devs = null;
-		if (jsonObject.has("devs")) {
-			devs = jsonObject.getAsJsonArray("devs");
+		if (request.has("devs")) {
+			devs = request.getAsJsonArray("devs");
 		}
 		if (devs != null) {
-			context.setVariable("devs", devs);
+			context.getMap("result").put("devs", devs);
 		} else {
 			context.setError("devs", context.getInput());
 		}
@@ -78,7 +84,7 @@ public class GeneralDevsHandler extends AbstractHandler {
 							+ e.toString());
 				}
 			}
-			context.setVariable("devs", jsonArrayDevs);
+			context.getMap("result").put("devs", jsonArrayDevs);
 		}
 	}
 
@@ -114,7 +120,7 @@ public class GeneralDevsHandler extends AbstractHandler {
 								+ e.toString());
 					}
 				}
-				context.setVariable("devs", jsonArrayDevs);
+				context.getMap("result").put("devs", jsonArrayDevs);
 			} else {
 				context.setError("devs", context.getInput());
 			}

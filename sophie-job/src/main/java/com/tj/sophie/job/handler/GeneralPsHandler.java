@@ -37,12 +37,21 @@ public class GeneralPsHandler extends AbstractHandler {
 		if (jsonObject == null) {
 			return;
 		}
+		
+		JsonObject request = null;
+		if(jsonObject.has("request")){
+			request = jsonObject.getAsJsonObject("request");
+		}
+		if(request == null){
+			return;
+		}
+		
 		JsonArray ps = null;
-		if (jsonObject.has("ps")) {
-			ps = jsonObject.getAsJsonArray("ps");
+		if (request.has("ps")) {
+			ps = request.getAsJsonArray("ps");
 		}
 		if (ps != null) {
-			context.setVariable("ps", ps);
+			context.getMap("result").put("ps", ps);
 		} else {
 			context.setError("ps", context.getInput());
 		}
@@ -80,7 +89,7 @@ public class GeneralPsHandler extends AbstractHandler {
 					ps.addProperty("name", name);
 					jsonArrayPs.add(ps);
 				}
-				context.setVariable("ps", jsonArrayPs);
+				context.getMap("result").put("ps", jsonArrayPs);
 			} else {
 				context.setError("ps", context.getInput());
 			}
