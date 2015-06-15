@@ -1,6 +1,8 @@
 package com.tj.sophie.job.handler;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -51,7 +53,13 @@ public class GeneralPsHandler extends AbstractHandler {
 			ps = request.getAsJsonArray("ps");
 		}
 		if (ps != null) {
-			context.getMap("result").put("ps", ps);
+			List<JsonObject> listPs = new ArrayList<JsonObject>();
+			Iterator<JsonElement> itPs = ps.iterator();
+			while (itPs.hasNext()) {
+				JsonObject joPs = itPs.next().getAsJsonObject();
+				listPs.add(joPs);
+			}
+			context.getMap("result").put("ps", listPs);
 		} else {
 			context.setError("ps", context.getInput());
 		}
@@ -71,7 +79,8 @@ public class GeneralPsHandler extends AbstractHandler {
 				JsonObject psJson = jsonObject.getAsJsonObject("reasons");
 				Set<Entry<String, JsonElement>> psSet = psJson.entrySet();
 				Iterator<Entry<String, JsonElement>> it = psSet.iterator();
-				JsonArray jsonArrayPs = new JsonArray();
+				//JsonArray jsonArrayPs = new JsonArray();
+				List<JsonObject> listPs = new ArrayList<JsonObject>();
 				while (it.hasNext()) {
 					JsonObject ps = new JsonObject();
 					Entry<String, JsonElement> psInfo = it.next();
@@ -87,9 +96,10 @@ public class GeneralPsHandler extends AbstractHandler {
 					ps.addProperty("ppid", Integer.parseInt(arr[2]));
 					ps.addProperty("status", status);
 					ps.addProperty("name", name);
-					jsonArrayPs.add(ps);
+					//jsonArrayPs.add(ps);
+					listPs.add(ps);
 				}
-				context.getMap("result").put("ps", jsonArrayPs);
+				context.getMap("result").put("ps", listPs);
 			} else {
 				context.setError("ps", context.getInput());
 			}
