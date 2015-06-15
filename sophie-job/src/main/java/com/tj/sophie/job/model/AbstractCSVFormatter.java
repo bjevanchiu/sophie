@@ -11,7 +11,7 @@ public abstract class AbstractCSVFormatter implements ICSVFormatter {
     private char delimiter;
     private List<String> extractEvents = new ArrayList<>();
     private List<String> extractColumns = new ArrayList<>();
-    private String extractCSV = "";
+    private List<String> extractCSVList = new ArrayList<>();
     private String nullString = "";
     private String key = "";
 
@@ -71,11 +71,11 @@ public abstract class AbstractCSVFormatter implements ICSVFormatter {
         this.key = key;
     }
 
-    public String getExtractCSV() {
-        return extractCSV;
+    public List<String> getExtractCSVList() {
+        return extractCSVList;
     }
 
-    public void setExtractCSV(String extractCSV) {
-        this.extractCSV = extractCSV;
+    public void setExtractCSVList(List<String> extractCSVList) {
+        this.extractCSVList = extractCSVList;
     }
 }
