@@ -1,9 +1,11 @@
 package com.tj.sophie.job.handler;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractHandler;
@@ -52,41 +54,47 @@ public class GeneralDevsHandler extends AbstractHandler {
 			devs = request.getAsJsonArray("devs");
 		}
 		if (devs != null) {
-			context.getMap("result").put("devs", devs);
+			List<JsonObject> listDev = new ArrayList<JsonObject>();
+			Iterator<JsonElement> itDev = devs.iterator();
+			while (itDev.hasNext()) {
+				JsonObject joDev = itDev.next().getAsJsonObject();
+				listDev.add(joDev);
+			}
+			context.getMap("result").put("devs", listDev);
 		} else {
 			context.setError("devs", context.getInput());
 		}
 	}
 
-	private void ProcessRubyDevs(IContext context) {
-		Pattern pattern = Pattern
-				.compile("\"devs\"=>\"(?<devs>.*?)\"},.*?(\"eventId\"=>\"devs\")");
-		String input = context.getInput();
-		Matcher matcher = pattern.matcher(input);
-		while (matcher.find()) {
-			String devsContent = matcher.group("devs");
-			String lines[] = devsContent.split("\\\\n");
-			JsonArray jsonArrayDevs = new JsonArray();
-			for (String line : lines) {
-				try {
-					JsonObject dev = new JsonObject();
-					String arr[] = line.split("\\s+");
-					String name = arr[arr.length - 1];
-					dev.addProperty("permission", arr[0]);
-					dev.addProperty("owner", arr[1]);
-					dev.addProperty("group", arr[2]);
-					dev.addProperty("createdAt", arr[arr.length - 3] + " "
-							+ arr[arr.length - 2]);
-					dev.addProperty("name", name);
-					jsonArrayDevs.add(dev);
-				} catch (Exception e) {
-					logger.debug("GeneralDevsHandler:ProcessRubyDevs::"
-							+ e.toString());
-				}
-			}
-			context.getMap("result").put("devs", jsonArrayDevs);
-		}
-	}
+//	private void ProcessRubyDevs(IContext context) {
+//		Pattern pattern = Pattern
+//				.compile("\"devs\"=>\"(?<devs>.*?)\"},.*?(\"eventId\"=>\"devs\")");
+//		String input = context.getInput();
+//		Matcher matcher = pattern.matcher(input);
+//		while (matcher.find()) {
+//			String devsContent = matcher.group("devs");
+//			String lines[] = devsContent.split("\\\\n");
+//			JsonArray jsonArrayDevs = new JsonArray();
+//			for (String line : lines) {
+//				try {
+//					JsonObject dev = new JsonObject();
+//					String arr[] = line.split("\\s+");
+//					String name = arr[arr.length - 1];
+//					dev.addProperty("permission", arr[0]);
+//					dev.addProperty("owner", arr[1]);
+//					dev.addProperty("group", arr[2]);
+//					dev.addProperty("createdAt", arr[arr.length - 3] + " "
+//							+ arr[arr.length - 2]);
+//					dev.addProperty("name", name);
+//					jsonArrayDevs.add(dev);
+//				} catch (Exception e) {
+//					logger.debug("GeneralDevsHandler:ProcessRubyDevs::"
+//							+ e.toString());
+//				}
+//			}
+//			context.getMap("result").put("devs", jsonArrayDevs);
+//		}
+//	}
 
 	private void processBingoDevs(IContext context) {
 		JsonObject jsonObject = context.getVariable("json");
@@ -102,7 +110,8 @@ public class GeneralDevsHandler extends AbstractHandler {
 				JsonObject devsJson = jsonObject.getAsJsonObject("reasons");
 				String devsContent = devsJson.get("devs").getAsString();
 				String lines[] = devsContent.split("\\n");
-				JsonArray jsonArrayDevs = new JsonArray();
+				//JsonArray jsonArrayDevs = new JsonArray();
+				List<JsonObject> devList = new ArrayList<JsonObject>();
 				for (String line : lines) {
 					try {
 						JsonObject dev = new JsonObject();
@@ -114,13 +123,14 @@ public class GeneralDevsHandler extends AbstractHandler {
 						dev.addProperty("createdAt", arr[arr.length - 3] + " "
 								+ arr[arr.length - 2]);
 						dev.addProperty("name", name);
-						jsonArrayDevs.add(dev);
+						devList.add(dev);
+						//jsonArrayDevs.add(dev);
 					} catch (Exception e) {
 						logger.debug("GeneralDevsHandler:processBingoDevs::"
 								+ e.toString());
 					}
 				}
-				context.getMap("result").put("devs", jsonArrayDevs);
+				context.getMap("result").put("devs", devList);
 			} else {
 				context.setError("devs", context.getInput());
 			}
