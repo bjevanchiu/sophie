@@ -1,6 +1,8 @@
 package com.tj.sophie.job.handler;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -37,12 +39,27 @@ public class GeneralPsHandler extends AbstractHandler {
 		if (jsonObject == null) {
 			return;
 		}
+		
+		JsonObject request = null;
+		if(jsonObject.has("request")){
+			request = jsonObject.getAsJsonObject("request");
+		}
+		if(request == null){
+			return;
+		}
+		
 		JsonArray ps = null;
-		if (jsonObject.has("ps")) {
-			ps = jsonObject.getAsJsonArray("ps");
+		if (request.has("ps")) {
+			ps = request.getAsJsonArray("ps");
 		}
 		if (ps != null) {
-			context.setVariable("ps", ps);
+			List<JsonObject> listPs = new ArrayList<JsonObject>();
+			Iterator<JsonElement> itPs = ps.iterator();
+			while (itPs.hasNext()) {
+				JsonObject joPs = itPs.next().getAsJsonObject();
+				listPs.add(joPs);
+			}
+			context.getMap("result").put("ps", listPs);
 		} else {
 			context.setError("ps", context.getInput());
 		}
@@ -62,11 +79,15 @@ public class GeneralPsHandler extends AbstractHandler {
 				JsonObject psJson = jsonObject.getAsJsonObject("reasons");
 				Set<Entry<String, JsonElement>> psSet = psJson.entrySet();
 				Iterator<Entry<String, JsonElement>> it = psSet.iterator();
-				JsonArray jsonArrayPs = new JsonArray();
+				//JsonArray jsonArrayPs = new JsonArray();
+				List<JsonObject> listPs = new ArrayList<JsonObject>();
 				while (it.hasNext()) {
 					JsonObject ps = new JsonObject();
 					Entry<String, JsonElement> psInfo = it.next();
 					String line = psInfo.getValue().getAsString();
+					if(line.startsWith("USER")){//去掉ps结果的表头
+						continue;
+					}
 					String arr[] = line.split("\\s+");
 					String name = arr[arr.length - 1];
 					String status = arr[arr.length - 2];
@@ -75,9 +96,10 @@ public class GeneralPsHandler extends AbstractHandler {
 					ps.addProperty("ppid", Integer.parseInt(arr[2]));
 					ps.addProperty("status", status);
 					ps.addProperty("name", name);
-					jsonArrayPs.add(ps);
+					//jsonArrayPs.add(ps);
+					listPs.add(ps);
 				}
-				context.setVariable("ps", jsonArrayPs);
+				context.getMap("result").put("ps", listPs);
 			} else {
 				context.setError("ps", context.getInput());
 			}

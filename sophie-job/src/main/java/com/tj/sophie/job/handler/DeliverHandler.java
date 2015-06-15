@@ -18,7 +18,7 @@ import com.tj.sophie.job.Actions;
  * Created by mbp on 6/9/15.
  */
 @Handler
-public class DevelerHandler extends AbstractHandler {
+public class DeliverHandler extends AbstractHandler {
 	
 	private Gson gson = new Gson();
 	

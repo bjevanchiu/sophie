@@ -15,5 +15,5 @@ public final class Actions {
     public static Action GeneralDevs = Action.create("main", "general_devs");
     public static Action GeneralDeliver = Action.create("main", "general_deliver");
     public static Action GeneralPs = Action.create("main", "general_ps");
-    public static Action CsvAdaptor = Action.create("main", "csv_adaptor");
+    public static Action CSVAdaptor = Action.create("main", "csv_adaptor");
 }
