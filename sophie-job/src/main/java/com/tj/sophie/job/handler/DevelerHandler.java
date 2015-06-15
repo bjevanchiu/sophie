@@ -1,7 +1,8 @@
 package com.tj.sophie.job.handler;
 
 
-import java.util.Arrays;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
@@ -60,7 +61,7 @@ public class DevelerHandler extends AbstractHandler {
 		JsonObject solutionListCake = responseObj.get("SolutionListCake")
 				.getAsJsonObject();
 
-		JsonArray delivers = new JsonArray();
+		List<JsonObject> delivers = new ArrayList<JsonObject>();
 		if (solutionListCake.has("solutionList")) {
 			JsonArray solutionList = solutionListCake.get("solutionList")
 					.getAsJsonArray();
