@@ -1,15 +1,19 @@
 package com.tj.sophie.job.model;
 
-import java.util.*;
+import com.tj.sophie.guice.Formatter;
+import com.tj.sophie.job.Constants;
+
+import java.util.Arrays;
 
 /**
  * Created by mbp on 6/4/15.
  */
-public class SeedEventHistoryCSVFormatter extends AbstractCSVFormatter implements ICSVFormatter{
+@Formatter(key = Constants.keys.EVENTS)
+public class EventsCSVFormatter extends AbstractCSVFormatter implements ICSVFormatter{
 
     @Override
     protected void onInitialize() {
-        this.setKey("seed_event_history_csv");
+        this.setKey(Constants.keys.EVENTS);
         this.setDelimiter('|');
         this.setNullString("\\N");
         this.setExtractEvents(Arrays.asList("solutionCanceled,active,solution_executed,solution_executing,deliver"));

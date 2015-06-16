@@ -20,7 +20,9 @@ public class Constants {
     public static final String FILTERED_FLAG = "filted_flag";
 
     public final class keys{
-        public static final String EVENTS = "events";
+        public static final String EVENTS = "Events";
+        public static final String PROPS = "Props";
+        public static final String CSVLIST = "CSVList";
     }
 
     public static Path getHdfsCachePath(Path local) {
