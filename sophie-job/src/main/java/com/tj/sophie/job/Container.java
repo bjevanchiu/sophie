@@ -5,7 +5,10 @@ import com.google.inject.Injector;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IHandler;
 import com.tj.sophie.guice.Binding;
+import com.tj.sophie.guice.Formatter;
 import com.tj.sophie.guice.Handler;
+import com.tj.sophie.job.model.FormatterFactory;
+import com.tj.sophie.job.model.ICSVFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +72,16 @@ public class Container {
             }
         }
         mainModule.initializeHandler(handlerTypes);
+
+        FormatterFactory formatterFactory = FormatterFactory.getInstance();
+        List<Class<ICSVFormatter>> formatterTypes = new ArrayList<>();
+        for (Class<?> clazz : types) {
+            Formatter formatter = ReflectionUtil.findAnnotation(Formatter.class, clazz);
+            if (formatter != null) {
+                formatterTypes.add((Class<ICSVFormatter>) clazz);
+            }
+        }
+        formatterFactory.initializeFormatter(formatterTypes);
 
         Logger logger = Container.getLogger();
 
