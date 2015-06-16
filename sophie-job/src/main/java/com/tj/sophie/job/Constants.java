@@ -2,7 +2,6 @@ package com.tj.sophie.job;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.sun.org.apache.xml.internal.utils.StringComparable;
 import org.apache.hadoop.fs.Path;
 
 import java.util.*;
@@ -19,10 +18,17 @@ public class Constants {
 
     public static final String FILTERED_FLAG = "filted_flag";
 
-    public final class keys{
+
+    public final class keys {
         public static final String EVENTS = "Events";
         public static final String PROPS = "Props";
         public static final String CSVLIST = "CSVList";
+    }
+
+    public final class Variables {
+        public static final String CONTENT_TYPE = "content_type";
+        public static final String DELIVERS = "delivers";
+        public static final String ORIGIN_JSON = "origin_json";
     }
 
     public static Path getHdfsCachePath(Path local) {

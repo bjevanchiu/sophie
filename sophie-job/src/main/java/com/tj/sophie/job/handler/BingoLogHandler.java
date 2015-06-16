@@ -8,6 +8,7 @@ import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
 import com.tj.sophie.job.Actions;
+import com.tj.sophie.job.Constants;
 import com.tj.sophie.job.ContentType;
 import com.tj.sophie.job.service.IFilterService;
 import com.tj.sophie.job.service.IGeneralJsonService;
@@ -49,7 +50,7 @@ public class BingoLogHandler extends AbstractHandler {
             return;
         }
         try {
-            ContentType contentType = (ContentType) context.getVariable("content_type");
+            ContentType contentType = context.getVariable(Constants.Variables.CONTENT_TYPE);
             JsonObject jsonObject = this.generalJsonService.parse(contentType, input);
             if (jsonObject != null) {
                 if (this.filterService.acceptEvent("app_process_error", jsonObject)

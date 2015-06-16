@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -27,7 +26,8 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
         String jsonString = context.getConfiguration().get(Constants.JARS);
-        List<String> typeStrings = gson.fromJson(jsonString, new TypeToken<List<String>>() {}.getType());
+        List<String> typeStrings = gson.fromJson(jsonString, new TypeToken<List<String>>() {
+        }.getType());
         List<Class<?>> types = new ArrayList<>();
         ClassLoader classloader = context.getConfiguration().getClassLoader();
         for (String typeString : typeStrings) {
@@ -61,10 +61,10 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         String path = ((FileSplit) context.getInputSplit()).getPath().getName();
 
         if (path.trim().toLowerCase().indexOf("bingo") != -1) {
-            ctx.setVariable("content_type", ContentType.BINGO);
+            ctx.setVariable(Constants.Variables.CONTENT_TYPE, ContentType.BINGO);
             actionService.execute(Actions.BingoLog, ctx);
         } else if (path.trim().toLowerCase().indexOf("hello") != -1) {
-            ctx.setVariable("content_type", ContentType.HELLO);
+            ctx.setVariable(Constants.Variables.CONTENT_TYPE, ContentType.HELLO);
             actionService.execute(Actions.HelloLog, ctx);
         } else {
             return;
@@ -72,11 +72,11 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
 
         actionService.execute(Actions.GeneralCSV, ctx);
         Map<String, Object> csvListMap = ctx.getMap(Constants.keys.CSVLIST);
-        if(csvListMap != null && !csvListMap.isEmpty()){
+        if (csvListMap != null && !csvListMap.isEmpty()) {
             List<String> csvList;
-            for (Map.Entry<String, Object> entry : csvListMap.entrySet()){
-                csvList = (List<String>)entry.getValue();
-                for(String csvStr : csvList){
+            for (Map.Entry<String, Object> entry : csvListMap.entrySet()) {
+                csvList = (List<String>) entry.getValue();
+                for (String csvStr : csvList) {
                     context.write(new Text(entry.getKey()), new Text(csvStr));
                 }
             }

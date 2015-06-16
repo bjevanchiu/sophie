@@ -1,7 +1,6 @@
 package com.tj.sophie.job.handler;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractHandler;
@@ -9,6 +8,7 @@ import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
 import com.tj.sophie.job.Actions;
+import com.tj.sophie.job.Constants;
 import com.tj.sophie.job.ContentType;
 import com.tj.sophie.job.service.IFilterService;
 import com.tj.sophie.job.service.IGeneralJsonService;
@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -47,21 +46,16 @@ public class HelloLogHandler extends AbstractHandler {
     @Override
     protected void onExecute(IContext context) {
         this.actionService.execute(Actions.GeneralFilter, context);
-
         String input = context.getInput();
         boolean filtered = this.filterService.accept(input);
         if (filtered) {
             return;
         }
         try {
-            JsonObject jsonObject = this.generalJsonService.parse((ContentType) context.getVariable("content_type"), input);
+            JsonObject jsonObject = this.generalJsonService.parse((ContentType) context.getVariable(Constants.Variables.CONTENT_TYPE), input);
             if (jsonObject != null) {
-            	context.setVariable("deliver", jsonObject);
-            	this.actionService.execute(Actions.GeneralDeliver, context);
-//            	
-//                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-//                    context.getMap("result").put(entry.getKey(), entry.getValue());
-//                }
+                context.setVariable(Constants.Variables.ORIGIN_JSON, jsonObject);
+                this.actionService.execute(Actions.GeneralDeliver, context);
             } else {
                 context.setInvalid("hello", input);
             }
