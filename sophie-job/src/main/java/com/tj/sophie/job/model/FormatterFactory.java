@@ -1,6 +1,9 @@
 package com.tj.sophie.job.model;
 
+import com.google.inject.Inject;
 import com.tj.sophie.guice.Formatter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.Map;
  */
 public class FormatterFactory {
     private static FormatterFactory ourInstance = new FormatterFactory();
-    private static Map<String, ICSVFormatter> formatters = new HashMap<>();
+    private static Map<String, ICSVFormatter> formattersMap = new HashMap<>();
 
     public static FormatterFactory getInstance() {
         return ourInstance;
@@ -20,10 +23,10 @@ public class FormatterFactory {
     private FormatterFactory() {
     }
 
-    public void initializeFormatter(List<Class<ICSVFormatter>> formatterTypes){
-        for(Class<ICSVFormatter> formatterType : formatterTypes){
+    public void loadFormatter(List<ICSVFormatter> formatters){
+        for(ICSVFormatter formatter : formatters){
             try {
-                formatters.put(formatterType.getAnnotation(Formatter.class).key(), formatterType.newInstance());
+                formattersMap.put(formatter.getClass().getAnnotation(Formatter.class).key(), formatter);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -31,7 +34,7 @@ public class FormatterFactory {
     }
 
     public ICSVFormatter getFormatter(String key){
-        return formatters.get(key);
+        return formattersMap.get(key);
     }
 
 

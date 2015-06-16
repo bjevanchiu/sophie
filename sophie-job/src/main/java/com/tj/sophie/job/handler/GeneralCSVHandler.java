@@ -29,11 +29,24 @@ public class GeneralCSVHandler extends AbstractHandler {
     @Override
     protected void onExecute(IContext context) {
         List<JsonObject> eventJsonObjects = context.getVariable(Constants.keys.EVENTS);
-        if(eventJsonObjects != null || !eventJsonObjects.isEmpty()){
+        if(eventJsonObjects != null && !eventJsonObjects.isEmpty()){
             try {
                 ICSVResult csvResult = csvService.transfer(Constants.keys.EVENTS, eventJsonObjects);
                 if(csvResult != null && !csvResult.getExtractCSVList().isEmpty()){
                     context.getMap(Constants.keys.CSVLIST).put(Constants.keys.EVENTS, csvResult.getExtractCSVList());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<JsonObject> propsJsonObjects = context.getVariable(Constants.keys.PROPS);
+        if(propsJsonObjects != null && !propsJsonObjects.isEmpty()){
+            try {
+                ICSVResult csvResult = csvService.transfer(Constants.keys.PROPS, propsJsonObjects);
+                if(csvResult != null && !csvResult.getExtractCSVList().isEmpty()){
+                    context.getMap(Constants.keys.CSVLIST).put(Constants.keys.PROPS, csvResult.getExtractCSVList());
                 }
 
             } catch (Exception e) {

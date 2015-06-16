@@ -73,16 +73,6 @@ public class Container {
         }
         mainModule.initializeHandler(handlerTypes);
 
-        FormatterFactory formatterFactory = FormatterFactory.getInstance();
-        List<Class<ICSVFormatter>> formatterTypes = new ArrayList<>();
-        for (Class<?> clazz : types) {
-            Formatter formatter = ReflectionUtil.findAnnotation(Formatter.class, clazz);
-            if (formatter != null) {
-                formatterTypes.add((Class<ICSVFormatter>) clazz);
-            }
-        }
-        formatterFactory.initializeFormatter(formatterTypes);
-
         Logger logger = Container.getLogger();
 
         this.injector = Guice.createInjector(mainModule);
@@ -92,5 +82,16 @@ public class Container {
             logger.info(String.format("register handler %s %s", handler.getAction().getCategory(), handler.getAction().getId()));
             actionService.register(handler);
         }
+
+        FormatterFactory formatterFactory = FormatterFactory.getInstance();
+        List<ICSVFormatter> formatters = new ArrayList<>();
+        for (Class<?> clazz : types) {
+            Formatter formatter = ReflectionUtil.findAnnotation(Formatter.class, clazz);
+            if (formatter != null) {
+                logger.info(String.format("Initialize Formatter: %s", clazz.getName()));
+                formatters.add(this.injector.getInstance((Class<ICSVFormatter>) clazz));
+            }
+        }
+        formatterFactory.loadFormatter(formatters);
     }
 }
