@@ -74,18 +74,6 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
             return;
         }
 
-        actionService.execute(Actions.GeneralCSV, ctx);
-        Map<String, Object> csvListMap = ctx.getMap(Constants.keys.CSVLIST);
-        if (csvListMap != null && !csvListMap.isEmpty()) {
-            List<String> csvList;
-            for (Map.Entry<String, Object> entry : csvListMap.entrySet()) {
-                csvList = (List<String>) entry.getValue();
-                for (String csvStr : csvList) {
-                    context.write(new Text(entry.getKey()), new Text(csvStr));
-                }
-            }
-            ctx.getMaps().remove(Constants.keys.CSVLIST);
-        }
 
         String errorString = ctx.getError("delivers");
         if (StringUtils.isNotEmpty(errorString)) {
@@ -97,8 +85,10 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
             throw new RuntimeException(invalidString);
         }
 
-        List<JsonObject> delivers = (List<JsonObject>) ctx.getVariable(Constants.Variables.DELIVERS);
+        List<JsonObject> delivers = ctx.getVariable(Constants.Variables.DELIVERS);
         if (delivers != null) {
+            ctx.setVariable(Constants.keys.EVENTS, delivers);
+
             for (JsonObject deliver : delivers) {
                 String text = gson.toJson(deliver, JsonObject.class);
                 context.write(new Text(path + ".deliver"), new Text(text));
@@ -121,5 +111,18 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
 //                context.write(new Text(entry.getKey()), new Text(valueString));
 //            }
 //        }
+
+        actionService.execute(Actions.GeneralCSV, ctx);
+        Map<String, Object> csvListMap = ctx.getMap(Constants.keys.CSVLIST);
+        if (csvListMap != null && !csvListMap.isEmpty()) {
+            List<String> csvList;
+            for (Map.Entry<String, Object> entry : csvListMap.entrySet()) {
+                csvList = (List<String>) entry.getValue();
+                for (String csvStr : csvList) {
+                    context.write(new Text(entry.getKey()), new Text(csvStr));
+                }
+            }
+            ctx.getMaps().remove(Constants.keys.CSVLIST);
+        }
     }
 }
