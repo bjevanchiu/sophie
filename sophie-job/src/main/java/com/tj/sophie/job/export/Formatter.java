@@ -1,4 +1,4 @@
-package com.tj.sophie.guice;
+package com.tj.sophie.job.export;
 
 import java.lang.annotation.*;
 

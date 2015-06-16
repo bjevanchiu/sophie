@@ -1,14 +1,13 @@
 package com.tj.sophie.job;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IHandler;
 import com.tj.sophie.guice.Binding;
-import com.tj.sophie.guice.Formatter;
+import com.tj.sophie.guice.GuiceModule;
 import com.tj.sophie.guice.Handler;
-import com.tj.sophie.job.model.FormatterFactory;
-import com.tj.sophie.job.model.ICSVFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,6 @@ public class Container {
 
     private void initializeGuice(List<Class<?>> types) {
 
-
         MainModule mainModule = new MainModule();
 
         Map<Class<?>, Class<?>> mapper = new HashMap<>();
@@ -81,7 +79,11 @@ public class Container {
 
         Logger logger = Container.getLogger();
 
-        this.injector = Guice.createInjector(mainModule);
+        List<AbstractModule> modules = this.loadModules(types);
+        modules.add(0, mainModule);
+
+        this.injector = Guice.createInjector(modules);
+
         IActionService actionService = this.injector.getInstance(IActionService.class);
         for (Class<IHandler> type : handlerTypes) {
             IHandler handler = this.injector.getInstance(type);
@@ -89,5 +91,25 @@ public class Container {
             actionService.register(handler);
         }
 
+    }
+
+    public List<AbstractModule> loadModules(List<Class<?>> types) {
+        Logger logger = Container.getLogger();
+        List<AbstractModule> modules = new ArrayList<>();
+        for (Class<?> clazz : types) {
+            GuiceModule guiceModule = ReflectionUtil.findAnnotation(GuiceModule.class, clazz);
+            boolean isModule = AbstractModule.class.isAssignableFrom(clazz);
+            if (guiceModule != null && isModule) {
+                AbstractModule module = null;
+                try {
+                    module = (AbstractModule) clazz.newInstance();
+                    modules.add(module);
+                } catch (IllegalAccessException | InstantiationException e) {
+                    e.printStackTrace();
+                    logger.info(String.format("new instance $s error", module.toString()));
+                }
+            }
+        }
+        return modules;
     }
 }
