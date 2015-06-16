@@ -16,8 +16,6 @@ public class Constants {
     public static final String JOB_HDFS_CACHE_ROOT = "/job_cache";
     public static final String JOB_LOCAL_CACHE_ROOT = "/tmp/hadoop/job";
 
-    public static final String FILTERED_FLAG = "filted_flag";
-
 
     public final class keys {
         public static final String EVENTS = "Events";
@@ -29,6 +27,7 @@ public class Constants {
         public static final String CONTENT_TYPE = "content_type";
         public static final String DELIVERS = "delivers";
         public static final String ORIGIN_JSON = "origin_json";
+        public static final String FILTERS = "filters";
     }
 
     public static Path getHdfsCachePath(Path local) {

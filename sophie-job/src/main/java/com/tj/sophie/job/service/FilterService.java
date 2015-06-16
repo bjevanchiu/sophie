@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @Binding(from = IFilterService.class, to = FilterService.class)
 public class FilterService extends AbstractService implements IFilterService {
 
-    private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<did>[0-9a-fA-F-]+)? *(?<level>\\w+) *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<content>[^\\{]+)(?<json>\\{.*\\})?$");
+    private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<did>[0-9a-fA-F-]+)? *(?<level>\\w+) *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<content>[^\\{]+?)(?<json>\\{.*\\})?$");
 
     @Override
     protected void onInitialize() {

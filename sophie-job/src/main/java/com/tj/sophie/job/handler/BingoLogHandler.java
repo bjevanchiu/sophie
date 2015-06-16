@@ -42,8 +42,6 @@ public class BingoLogHandler extends AbstractHandler {
     @Override
     protected void onExecute(IContext context) {
 
-        this.actionService.execute(Actions.GeneralFilter, context);
-
         String input = context.getInput();
         boolean filtered = this.filterService.accept(input);
         if (filtered) {

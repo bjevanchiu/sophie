@@ -27,8 +27,6 @@ public class DeliverHandler extends AbstractHandler {
     @Override
     protected void onInitialize() {
         this.setAction(Actions.GeneralDeliver);
-
-
     }
 
     @Override
@@ -43,6 +41,7 @@ public class DeliverHandler extends AbstractHandler {
         }
 
         JsonObject jsonObject = this.transfer(json);
+
 
         JsonObject commonJson = JsonHelper.helloCommon(jsonObject);
         JsonObject deliverCommonJson = this.getCommon(jsonObject);
@@ -61,6 +60,7 @@ public class DeliverHandler extends AbstractHandler {
             for (JsonElement solution : solutionList) {
 
                 JsonObject deliverObject = new JsonObject();
+                deliverObject = JsonHelper.join(solution.getAsJsonObject(), deliverObject);
 
                 deliverObject.addProperty("eventId", "deliver");
 
@@ -72,7 +72,12 @@ public class DeliverHandler extends AbstractHandler {
                 if (solutionListCake.has("sid")) {
                     deliverObject.add("sid", solutionListCake.get("sid"));
                 }
-                this.copy(deliverObject, deliverCommonJson);
+                deliverObject = JsonHelper.join(commonJson, deliverObject);
+                if (deliverObject.has("id")) {
+                    int solution_id = deliverObject.get("id").getAsInt();
+                    deliverObject.remove("id");
+                    deliverObject.addProperty("solution_id", solution_id);
+                }
                 delivers.add(deliverObject);
             }
         }
@@ -81,16 +86,6 @@ public class DeliverHandler extends AbstractHandler {
         } else {
             context.setError("delivers", context.getInput());
         }
-    }
-
-    private JsonObject toJsonObjectByKey(JsonObject sourceJsonObject,
-                                         JsonObject targetJsonObject, String[] keyArray) {
-        for (String key : keyArray) {
-            if (sourceJsonObject.has(key)) {
-                targetJsonObject.add(key, sourceJsonObject.get(key));
-            }
-        }
-        return targetJsonObject;
     }
 
     private JsonObject transfer(JsonObject jsonObject) {
@@ -116,11 +111,5 @@ public class DeliverHandler extends AbstractHandler {
             result.add(entry.getKey(), entry.getValue());
         }
         return result;
-    }
-
-    private void copy(JsonObject source, JsonObject destination) {
-        for (Map.Entry<String, JsonElement> entry : source.entrySet()) {
-            JsonHelper.copyProperty(entry.getKey(), source, destination);
-        }
     }
 }

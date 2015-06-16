@@ -1,6 +1,7 @@
 package com.tj.sophie.job;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
@@ -11,7 +12,9 @@ import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by mbp on 6/5/15.
@@ -63,6 +66,7 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         if (path.trim().toLowerCase().indexOf("bingo") != -1) {
             ctx.setVariable(Constants.Variables.CONTENT_TYPE, ContentType.BINGO);
             actionService.execute(Actions.BingoLog, ctx);
+            throw new RuntimeException(input);
         } else if (path.trim().toLowerCase().indexOf("hello") != -1) {
             ctx.setVariable(Constants.Variables.CONTENT_TYPE, ContentType.HELLO);
             actionService.execute(Actions.HelloLog, ctx);
@@ -85,20 +89,37 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
 
         String errorString = ctx.getError("delivers");
         if (StringUtils.isNotEmpty(errorString)) {
-            context.write(new Text("error"), new Text(errorString));
+            context.write(new Text(path + ".error"), new Text(errorString));
         }
         String invalidString = ctx.getInvalid("hello");
         if (StringUtils.isNotEmpty(invalidString)) {
-            context.write(new Text("invalid"), new Text(invalidString));
+            context.write(new Text(path + ".invalid"), value);
+            throw new RuntimeException(invalidString);
         }
-        Map<String, Map<String, Object>> maps = ctx.getMaps();
-        Set<Map.Entry<String, Map<String, Object>>> mapEntries = maps.entrySet();
-        for (Map.Entry<String, Map<String, Object>> entry : mapEntries) {
-            String valueString = this.gson.toJson(new TreeMap(entry.getValue()), new TypeToken<Map<String, Object>>() {
-            }.getType());
-            if (!valueString.equalsIgnoreCase("{}")) {
-                context.write(new Text(entry.getKey()), new Text(valueString));
+
+        List<JsonObject> delivers = (List<JsonObject>) ctx.getVariable(Constants.Variables.DELIVERS);
+        if (delivers != null) {
+            for (JsonObject deliver : delivers) {
+                String text = gson.toJson(deliver, JsonObject.class);
+                context.write(new Text(path + ".deliver"), new Text(text));
             }
+            context.write(new Text(path + ".count"), new Text("1"));
         }
+
+        Map<String, Object> filters = ctx.getMap(Constants.Variables.FILTERS);
+        for (Map.Entry<String, Object> entry : filters.entrySet()) {
+            context.write(new Text(path + ".filter"), new Text(entry.getValue().toString()));
+        }
+
+
+//        Map<String, Map<String, Object>> maps = ctx.getMaps();
+//        Set<Map.Entry<String, Map<String, Object>>> mapEntries = maps.entrySet();
+//        for (Map.Entry<String, Map<String, Object>> entry : mapEntries) {
+//            String valueString = this.gson.toJson(new TreeMap(entry.getValue()), new TypeToken<Map<String, Object>>() {
+//            }.getType());
+//            if (!valueString.equalsIgnoreCase("{}")) {
+//                context.write(new Text(entry.getKey()), new Text(valueString));
+//            }
+//        }
     }
 }

@@ -1,6 +1,5 @@
 package com.tj.sophie.job.handler;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractHandler;
@@ -15,18 +14,14 @@ import com.tj.sophie.job.service.IGeneralJsonService;
 import org.slf4j.Logger;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by mbp on 6/8/15.
  */
 @Handler
 public class HelloLogHandler extends AbstractHandler {
-    private Gson gson = new Gson();
-    private Pattern pattern = Pattern.compile("^(?<date>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}) (?<ssid>\\d+) *(?<level>\\w)+ *\\[(?<class>.*?)\\] *\\(.*?\\) *(?<json>\\{.*\\})?");
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SS");
-
     @Inject
     private Logger logger;
 
@@ -45,10 +40,11 @@ public class HelloLogHandler extends AbstractHandler {
 
     @Override
     protected void onExecute(IContext context) {
-        this.actionService.execute(Actions.GeneralFilter, context);
         String input = context.getInput();
         boolean filtered = this.filterService.accept(input);
         if (filtered) {
+            Map<String, Object> filters = context.getMap(Constants.Variables.FILTERS);
+            filters.put(UUID.randomUUID().toString(), input);
             return;
         }
         try {
@@ -56,8 +52,6 @@ public class HelloLogHandler extends AbstractHandler {
             if (jsonObject != null) {
                 context.setVariable(Constants.Variables.ORIGIN_JSON, jsonObject);
                 this.actionService.execute(Actions.GeneralDeliver, context);
-            } else {
-                context.setInvalid("hello", input);
             }
         } catch (ParseException e) {
             context.setError("generalJson", input);
