@@ -24,6 +24,7 @@ public class Container {
     private static Container ourInstance = new Container();
     private Injector injector;
     private boolean initialized = false;
+    private List<Class<?>> loadedClasses = null;
 
     private Container() {
     }
@@ -40,11 +41,16 @@ public class Container {
         return this.injector.getInstance(IActionService.class);
     }
 
+    public List<Class<?>> getLoadedClasses() {
+        return this.loadedClasses;
+    }
+
     public synchronized void initialize(List<Class<?>> types) {
         if (this.initialized) {
             return;
         }
         this.initialized = true;
+        this.loadedClasses = types;
         this.initializeGuice(types);
     }
 
