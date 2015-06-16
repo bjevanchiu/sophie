@@ -69,6 +69,20 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         } else {
             return;
         }
+
+        actionService.execute(Actions.GeneralCSV, ctx);
+        Map<String, Object> csvListMap = ctx.getMap(Constants.keys.CSVLIST);
+        if(csvListMap != null && !csvListMap.isEmpty()){
+            List<String> csvList;
+            for (Map.Entry<String, Object> entry : csvListMap.entrySet()){
+                csvList = (List<String>)entry.getValue();
+                for(String csvStr : csvList){
+                    context.write(new Text(entry.getKey()), new Text(csvStr));
+                }
+            }
+            ctx.getMaps().remove(Constants.keys.CSVLIST);
+        }
+
         String errorString = ctx.getError("delivers");
         if (StringUtils.isNotEmpty(errorString)) {
             context.write(new Text("error"), new Text(errorString));

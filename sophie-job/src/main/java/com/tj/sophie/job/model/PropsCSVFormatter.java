@@ -13,7 +13,7 @@ public class PropsCSVFormatter extends AbstractCSVFormatter implements ICSVForma
 
     @Override
     protected void onInitialize() {
-        this.setKey("props_csv");
+        this.setKey(Constants.keys.PROPS);
         this.setDelimiter('|');
         this.setNullString("\\N");
         this.setExtractEvents(Arrays.asList("props"));

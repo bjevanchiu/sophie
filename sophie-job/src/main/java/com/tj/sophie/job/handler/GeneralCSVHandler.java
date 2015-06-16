@@ -23,7 +23,7 @@ public class GeneralCSVHandler extends AbstractHandler {
 
     @Override
     protected void onInitialize() {
-        this.setAction(Actions.CSVAdaptor);
+        this.setAction(Actions.GeneralCSV);
     }
 
     @Override

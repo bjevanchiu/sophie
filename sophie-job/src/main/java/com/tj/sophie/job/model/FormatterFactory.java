@@ -24,9 +24,7 @@ public class FormatterFactory {
         for(Class<ICSVFormatter> formatterType : formatterTypes){
             try {
                 formatters.put(formatterType.getAnnotation(Formatter.class).key(), formatterType.newInstance());
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
