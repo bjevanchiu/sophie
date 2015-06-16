@@ -89,15 +89,5 @@ public class Container {
             actionService.register(handler);
         }
 
-        FormatterFactory formatterFactory = FormatterFactory.getInstance();
-        List<ICSVFormatter> formatters = new ArrayList<>();
-        for (Class<?> clazz : types) {
-            Formatter formatter = ReflectionUtil.findAnnotation(Formatter.class, clazz);
-            if (formatter != null) {
-                logger.info(String.format("Initialize Formatter: %s", clazz.getName()));
-                formatters.add(this.injector.getInstance((Class<ICSVFormatter>) clazz));
-            }
-        }
-        formatterFactory.loadFormatter(formatters);
     }
 }
