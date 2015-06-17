@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
+import com.tj.sophie.job.helper.Helper;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -77,26 +78,37 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
         }
 
         if (contentType == ContentType.BINGO) {
-            String event = ctx.getVariable(Constants.Variables.EVENT_NAME);
-            JsonObject jsonObject = null;
-            if (event.equalsIgnoreCase("active")) {
-                jsonObject = ctx.getVariable(Constants.Variables.ACTIVE);
-            } else if (event.equalsIgnoreCase("solutionCanceled")) {
-                jsonObject = ctx.getVariable(Constants.Variables.CANCELED);
-            } else if (event.equalsIgnoreCase("solution_executed")) {
-                jsonObject = ctx.getVariable(Constants.Variables.EXECUTED);
-            } else if (event.equalsIgnoreCase("solution_executing")) {
-                jsonObject = ctx.getVariable(Constants.Variables.EXECUTING);
-            }
-            if (jsonObject == null) {
-                context.write(new Text(path + ".error"), value);
+            Boolean flag = ctx.getVariable(Constants.Variables.FILTER_FLAG);
+            if (flag == null || !flag) {
+                String event = ctx.getVariable(Constants.Variables.EVENT_NAME);
+                if (Helper.isNullOrEmpty(event)) {
+                    context.write(new Text(path + ".error"), value);
+                    return;
+                }
+                JsonObject jsonObject = null;
+                if (event.equalsIgnoreCase("active")) {
+                    jsonObject = ctx.getVariable(Constants.Variables.ACTIVE);
+                } else if (event.equalsIgnoreCase("solutionCanceled")) {
+                    jsonObject = ctx.getVariable(Constants.Variables.CANCELED);
+                } else if (event.equalsIgnoreCase("solution_executed")) {
+                    jsonObject = ctx.getVariable(Constants.Variables.EXECUTED);
+                } else if (event.equalsIgnoreCase("solution_executing")) {
+                    jsonObject = ctx.getVariable(Constants.Variables.EXECUTING);
+                }
+                if (jsonObject == null) {
+                    context.write(new Text(path + ".error"), value);
+                }
+
+                String text = gson.toJson(jsonObject, JsonObject.class);
+                List<JsonObject> jsonObjects = new ArrayList<>();
+                jsonObjects.add(jsonObject);
+                ctx.setVariable(Constants.Keys.EVENTS, jsonObjects);
+                context.write(new Text(path + ".events"), new Text(text));
             }
             Map<String, Object> filters = ctx.getMap(Constants.Variables.FILTERS);
             for (Map.Entry<String, Object> entry : filters.entrySet()) {
                 context.write(new Text(path + ".filter"), new Text(entry.getValue().toString()));
             }
-            String text = gson.toJson(jsonObject, JsonObject.class);
-            context.write(new Text(path + ".events"), new Text(text));
 
         } else if (contentType == ContentType.HELLO) {
             List<JsonObject> delivers = ctx.getVariable(Constants.Variables.DELIVERS);

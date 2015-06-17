@@ -27,6 +27,7 @@ public class Constants {
         public static final String ORIGIN_JSON = "origin_json";
         public static final String COMMON_JSON = "common_json";
         public static final String FILTERS = "filters";
+        public static final String FILTER_FLAG = "filter_flag";
         public static final String REASONS = "reasons";
         public static final String EVENT_NAME = "event_name";
         public static final String NUT_CODE = "nut_code";

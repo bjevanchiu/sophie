@@ -48,6 +48,7 @@ public class BingoLogHandler extends AbstractHandler {
         if (filtered) {
             Map<String, Object> filters = context.getMap(Constants.Variables.FILTERS);
             filters.put(UUID.randomUUID().toString(), input);
+            context.setVariable(Constants.Variables.FILTER_FLAG, true);
             return;
         }
         try {
@@ -63,11 +64,15 @@ public class BingoLogHandler extends AbstractHandler {
                         || this.filterService.acceptEvent("props", jsonObject)
                         || this.filterService.acceptEvent("ps", jsonObject)
                         || this.filterService.acceptEvent("release", jsonObject)) {
+                    context.setVariable(Constants.Variables.FILTER_FLAG, true);
                     return;
                 }
                 context.setVariable(Constants.Variables.ORIGIN_JSON, jsonObject);
+                context.setVariable(Constants.Variables.ORIGIN_JSON, jsonObject);
                 JsonObject commonJson = JsonHelper.bingoCommon(jsonObject);
-                JsonObject reasons = commonJson.get("reasons").getAsJsonObject();
+                context.setVariable(Constants.Variables.COMMON_JSON, commonJson);
+                JsonObject reasons = jsonObject.get("reasons").getAsJsonObject();
+                context.setVariable(Constants.Variables.REASONS, reasons);
                 String event = commonJson.get("eventId").getAsString();
                 if (commonJson == null || reasons == null || event == null) {
                     context.setError("json", input);
