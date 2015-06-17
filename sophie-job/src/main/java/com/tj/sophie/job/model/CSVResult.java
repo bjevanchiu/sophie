@@ -9,16 +9,13 @@ import java.util.List;
  * Created by evan.chiu on 2015/6/16.
  */
 @Binding(from = ICSVResult.class, to = CSVResult.class)
-public class CSVResult implements ICSVResult{
+public class CSVResult extends AbstractCSVResult implements ICSVResult{
     private boolean initialized = false;
     private List<String> extractCSVList;
+
     @Override
-    public void initialize() {
-        if (this.initialized) {
-            return;
-        }
+    protected void onInitialize() {
         extractCSVList = new ArrayList<>();
-        this.initialized = true;
     }
 
     @Override
@@ -30,4 +27,5 @@ public class CSVResult implements ICSVResult{
     public void setExtractCSVList(List<String> extractCSVList) {
         this.extractCSVList = extractCSVList;
     }
+
 }

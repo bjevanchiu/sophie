@@ -17,7 +17,7 @@ public class Constants {
     public static final String JOB_LOCAL_CACHE_ROOT = "/tmp/hadoop/job";
 
 
-    public final class keys {
+    public final class Keys {
         public static final String EVENTS = "Events";
         public static final String PROPS = "Props";
         public static final String CSVLIST = "CSVList";

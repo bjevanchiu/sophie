@@ -87,7 +87,7 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
 
         List<JsonObject> delivers = ctx.getVariable(Constants.Variables.DELIVERS);
         if (delivers != null) {
-            ctx.setVariable(Constants.keys.EVENTS, delivers);
+            ctx.setVariable(Constants.Keys.EVENTS, delivers);
 
             for (JsonObject deliver : delivers) {
                 String text = gson.toJson(deliver, JsonObject.class);
@@ -113,7 +113,7 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
 //        }
 
         actionService.execute(Actions.GeneralCSV, ctx);
-        Map<String, Object> csvListMap = ctx.getMap(Constants.keys.CSVLIST);
+        Map<String, Object> csvListMap = ctx.getMap(Constants.Keys.CSVLIST);
         if (csvListMap != null && !csvListMap.isEmpty()) {
             List<String> csvList;
             for (Map.Entry<String, Object> entry : csvListMap.entrySet()) {
@@ -122,7 +122,7 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
                     context.write(new Text(entry.getKey()), new Text(csvStr));
                 }
             }
-            ctx.getMaps().remove(Constants.keys.CSVLIST);
+            ctx.getMaps().remove(Constants.Keys.CSVLIST);
         }
     }
 }

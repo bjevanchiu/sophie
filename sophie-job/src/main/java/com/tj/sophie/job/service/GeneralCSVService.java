@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractService;
 import com.tj.sophie.guice.Binding;
-import com.tj.sophie.job.model.FormatterFactory;
+import com.tj.sophie.job.model.CSVFormatterFactory;
 import com.tj.sophie.job.model.ICSVFormatter;
 import com.tj.sophie.job.model.ICSVResult;
 
@@ -27,7 +27,8 @@ public class GeneralCSVService extends AbstractService implements IGeneralCSVSer
 
     @Override
     public ICSVResult transfer(String formatterKey, List<JsonObject> jsonOjectList) throws ParseException, IllegalAccessException, InstantiationException {
-        ICSVFormatter formatter = FormatterFactory.getInstance().getFormatter(formatterKey);
+        ICSVFormatter formatter = CSVFormatterFactory.getInstance().getFormatter(formatterKey);
+
         List<String> formatCSVList = new ArrayList<>();
         for(JsonObject jsonObject : jsonOjectList){
             List<Object> values = new ArrayList<>();

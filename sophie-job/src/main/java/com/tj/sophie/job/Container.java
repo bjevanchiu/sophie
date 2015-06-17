@@ -44,6 +44,8 @@ public class Container {
         return this.loadedClasses;
     }
 
+    public Injector getInjector(){return this.injector;}
+
     public synchronized void initialize(List<Class<?>> types) {
         if (this.initialized) {
             return;
