@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.tj.sophie.core.IActionService;
 import com.tj.sophie.core.IContext;
-import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.FileSplit;
@@ -63,58 +62,66 @@ public class MainMapper extends Mapper<Object, Text, Text, Text> {
 
         String path = ((FileSplit) context.getInputSplit()).getPath().getName();
 
+        ContentType contentType;
+
         if (path.trim().toLowerCase().indexOf("bingo") != -1) {
             ctx.setVariable(Constants.Variables.CONTENT_TYPE, ContentType.BINGO);
+            contentType = ContentType.BINGO;
             actionService.execute(Actions.BingoLog, ctx);
-            throw new RuntimeException(input);
         } else if (path.trim().toLowerCase().indexOf("hello") != -1) {
             ctx.setVariable(Constants.Variables.CONTENT_TYPE, ContentType.HELLO);
+            contentType = ContentType.HELLO;
             actionService.execute(Actions.HelloLog, ctx);
         } else {
             return;
         }
 
-
-        String errorString = ctx.getError("delivers");
-        if (StringUtils.isNotEmpty(errorString)) {
-            context.write(new Text(path + ".error"), new Text(errorString));
-        }
-        String invalidString = ctx.getInvalid("hello");
-        if (StringUtils.isNotEmpty(invalidString)) {
-            context.write(new Text(path + ".invalid"), value);
-            throw new RuntimeException(invalidString);
-        }
-
-        List<JsonObject> delivers = ctx.getVariable(Constants.Variables.DELIVERS);
-        if (delivers != null) {
-            ctx.setVariable(Constants.Keys.EVENTS, delivers);
-
-            for (JsonObject deliver : delivers) {
-                String text = gson.toJson(deliver, JsonObject.class);
-                context.write(new Text(path + ".deliver"), new Text(text));
+        if (contentType == ContentType.BINGO) {
+            String event = ctx.getVariable(Constants.Variables.EVENT_NAME);
+            JsonObject jsonObject = null;
+            if (event.equalsIgnoreCase("active")) {
+                jsonObject = ctx.getVariable(Constants.Variables.ACTIVE);
+            } else if (event.equalsIgnoreCase("solutionCanceled")) {
+                jsonObject = ctx.getVariable(Constants.Variables.CANCELED);
+            } else if (event.equalsIgnoreCase("solution_executed")) {
+                jsonObject = ctx.getVariable(Constants.Variables.EXECUTED);
+            } else if (event.equalsIgnoreCase("solution_executing")) {
+                jsonObject = ctx.getVariable(Constants.Variables.EXECUTING);
             }
-            context.write(new Text(path + ".count"), new Text("1"));
+            if (jsonObject == null) {
+                context.write(new Text(path + ".error"), value);
+            }
+            Map<String, Object> filters = ctx.getMap(Constants.Variables.FILTERS);
+            for (Map.Entry<String, Object> entry : filters.entrySet()) {
+                context.write(new Text(path + ".filter"), new Text(entry.getValue().toString()));
+            }
+            String text = gson.toJson(jsonObject, JsonObject.class);
+            context.write(new Text(path + ".events"), new Text(text));
+
+        } else if (contentType == ContentType.HELLO) {
+            List<JsonObject> delivers = ctx.getVariable(Constants.Variables.DELIVERS);
+            if (delivers != null) {
+                ctx.setVariable(Constants.Keys.EVENTS, delivers);
+
+                for (JsonObject deliver : delivers) {
+                    String text = gson.toJson(deliver, JsonObject.class);
+                    context.write(new Text(path + ".deliver"), new Text(text));
+                }
+                context.write(new Text(path + ".count"), new Text("1"));
+            }
+
+            Map<String, Object> filters = ctx.getMap(Constants.Variables.FILTERS);
+            for (Map.Entry<String, Object> entry : filters.entrySet()) {
+                context.write(new Text(path + ".filter"), new Text(entry.getValue().toString()));
+            }
         }
 
-        Map<String, Object> filters = ctx.getMap(Constants.Variables.FILTERS);
-        for (Map.Entry<String, Object> entry : filters.entrySet()) {
-            context.write(new Text(path + ".filter"), new Text(entry.getValue().toString()));
-        }
-
-
-//        Map<String, Map<String, Object>> maps = ctx.getMaps();
-//        Set<Map.Entry<String, Map<String, Object>>> mapEntries = maps.entrySet();
-//        for (Map.Entry<String, Map<String, Object>> entry : mapEntries) {
-//            String valueString = this.gson.toJson(new TreeMap(entry.getValue()), new TypeToken<Map<String, Object>>() {
-//            }.getType());
-//            if (!valueString.equalsIgnoreCase("{}")) {
-//                context.write(new Text(entry.getKey()), new Text(valueString));
-//            }
-//        }
 
         actionService.execute(Actions.GeneralCSV, ctx);
         Map<String, Object> csvListMap = ctx.getMap(Constants.Keys.CSVLIST);
-        if (csvListMap != null && !csvListMap.isEmpty()) {
+        if (csvListMap != null && !csvListMap.isEmpty())
+
+        {
             List<String> csvList;
             for (Map.Entry<String, Object> entry : csvListMap.entrySet()) {
                 csvList = (List<String>) entry.getValue();

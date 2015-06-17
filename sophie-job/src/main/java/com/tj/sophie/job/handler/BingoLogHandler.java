@@ -1,6 +1,5 @@
 package com.tj.sophie.job.handler;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 import com.tj.sophie.core.AbstractHandler;
@@ -10,12 +9,14 @@ import com.tj.sophie.guice.Handler;
 import com.tj.sophie.job.Actions;
 import com.tj.sophie.job.Constants;
 import com.tj.sophie.job.ContentType;
+import com.tj.sophie.job.helper.JsonHelper;
 import com.tj.sophie.job.service.IFilterService;
 import com.tj.sophie.job.service.IGeneralJsonService;
 import org.slf4j.Logger;
 
 import java.text.ParseException;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by mbp on 6/8/15.
@@ -45,6 +46,8 @@ public class BingoLogHandler extends AbstractHandler {
         String input = context.getInput();
         boolean filtered = this.filterService.accept(input);
         if (filtered) {
+            Map<String, Object> filters = context.getMap(Constants.Variables.FILTERS);
+            filters.put(UUID.randomUUID().toString(), input);
             return;
         }
         try {
@@ -62,20 +65,16 @@ public class BingoLogHandler extends AbstractHandler {
                         || this.filterService.acceptEvent("release", jsonObject)) {
                     return;
                 }
-                if (contentType == ContentType.BINGO) {
-                    if (jsonObject.has("reasons") && jsonObject.has("eventId")) {
-                        JsonObject reasons = jsonObject.get("reasons").getAsJsonObject();
-                        jsonObject.remove("reasons");
-                        String event = jsonObject.get("eventId").getAsString();
-                        context.setVariable("reasons_json", reasons);
-                        this.actionService.execute(Actions.ProcessReasons, context);
-                    } else {
-                        context.setError("reasons", input);
-                    }
+                context.setVariable(Constants.Variables.ORIGIN_JSON, jsonObject);
+                JsonObject commonJson = JsonHelper.bingoCommon(jsonObject);
+                JsonObject reasons = commonJson.get("reasons").getAsJsonObject();
+                String event = commonJson.get("eventId").getAsString();
+                if (commonJson == null || reasons == null || event == null) {
+                    context.setError("json", input);
+                    return;
                 }
-                for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-                    context.getMap("result").put(entry.getKey(), entry.getValue());
-                }
+                context.setVariable(Constants.Variables.EVENT_NAME, event);
+                this.actionService.execute(Actions.ProcessReasons, context);
             } else {
                 context.setInvalid("bingo", input);
             }

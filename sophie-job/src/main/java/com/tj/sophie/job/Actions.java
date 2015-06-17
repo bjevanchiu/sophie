@@ -15,4 +15,5 @@ public final class Actions {
     public static Action GeneralDeliver = Action.create("main", "general_deliver");
     public static Action GeneralPs = Action.create("main", "general_ps");
     public static Action GeneralCSV = Action.create("main", "general_csv");
+    public static Action ProcessKnownRootAddress = Action.create("main", "process_known_root_address");
 }

@@ -5,7 +5,9 @@ import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
 import com.tj.sophie.job.Actions;
+import com.tj.sophie.job.Constants;
 import com.tj.sophie.job.helper.Helper;
+import com.tj.sophie.job.helper.JsonHelper;
 
 /**
  * Created by mbp on 6/10/15.
@@ -19,11 +21,11 @@ public class ExecutingReasonsHandler extends AbstractHandler {
 
     @Override
     protected void onExecute(IContext context) {
-        String event = context.getVariable("event");
+        String event = context.getVariable(Constants.Variables.EVENT_NAME);
         if (Helper.isNullOrEmpty(event) || !event.equalsIgnoreCase("solution_executing")) {
             return;
         }
-        JsonObject reasons = context.getVariable("reasons_json");
+        JsonObject reasons = context.getVariable(Constants.Variables.REASONS);
         if (!reasons.has("id")
                 || !reasons.has("mem_total")
                 || !reasons.has("system_free_space")
@@ -31,10 +33,20 @@ public class ExecutingReasonsHandler extends AbstractHandler {
                 || !reasons.has("mem_free")) {
             context.setError("reasons", reasons);
         }
-        context.getMap("result").put("solution_id", reasons.get("id").getAsString());
-        context.getMap("result").put("mem_total", reasons.get("mem_total").getAsString());
-        context.getMap("result").put("system_free_space", reasons.get("system_free_space").getAsString());
-        context.getMap("result").put("data_free_space", reasons.get("data_free_space").getAsString());
-        context.getMap("result").put("mem_free", reasons.get("mem_free").getAsString());
+
+        JsonObject jsonObject = new JsonObject();
+
+        String solution_id = reasons.get("id").getAsString();
+        jsonObject.addProperty("solution_id", solution_id);
+        JsonHelper.copyProperty("mem_total", reasons, jsonObject);
+        JsonHelper.copyProperty("system_free_space", reasons, jsonObject);
+        JsonHelper.copyProperty("data_free_space", reasons, jsonObject);
+        JsonHelper.copyProperty("mem_free", reasons, jsonObject);
+
+        JsonObject common = context.getVariable(Constants.Variables.COMMON_JSON);
+
+        jsonObject = JsonHelper.join(jsonObject, common);
+
+        context.setVariable(Constants.Variables.EXECUTING, jsonObject);
     }
 }

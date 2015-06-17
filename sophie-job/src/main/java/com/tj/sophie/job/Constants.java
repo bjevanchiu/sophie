@@ -16,7 +16,6 @@ public class Constants {
     public static final String JOB_HDFS_CACHE_ROOT = "/job_cache";
     public static final String JOB_LOCAL_CACHE_ROOT = "/tmp/hadoop/job";
 
-
     public final class Keys {
         public static final String EVENTS = "Events";
         public static final String PROPS = "Props";
@@ -25,9 +24,22 @@ public class Constants {
 
     public final class Variables {
         public static final String CONTENT_TYPE = "content_type";
-        public static final String DELIVERS = "delivers";
         public static final String ORIGIN_JSON = "origin_json";
+        public static final String COMMON_JSON = "common_json";
         public static final String FILTERS = "filters";
+        public static final String REASONS = "reasons";
+        public static final String EVENT_NAME = "event_name";
+        public static final String NUT_CODE = "nut_code";
+        public static final String NUT_EXISTS = "nut_exists";
+
+
+
+
+        public static final String DELIVERS = "seed_delivers";
+        public static final String ACTIVE = "seed_active";
+        public static final String EXECUTING = "seed_executing";
+        public static final String EXECUTED = "seed_executed";
+        public static final String CANCELED = "seed_canceled";
     }
 
     public static Path getHdfsCachePath(Path local) {

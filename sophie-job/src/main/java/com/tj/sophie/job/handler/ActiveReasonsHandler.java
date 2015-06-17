@@ -6,7 +6,9 @@ import com.tj.sophie.core.AbstractHandler;
 import com.tj.sophie.core.IContext;
 import com.tj.sophie.guice.Handler;
 import com.tj.sophie.job.Actions;
+import com.tj.sophie.job.Constants;
 import com.tj.sophie.job.helper.Helper;
+import com.tj.sophie.job.helper.JsonHelper;
 import org.slf4j.Logger;
 
 /**
@@ -24,15 +26,21 @@ public class ActiveReasonsHandler extends AbstractHandler {
 
     @Override
     protected void onExecute(IContext context) {
-        String event = context.getVariable("event");
+        String event = context.getVariable(Constants.Variables.EVENT_NAME);
         if (Helper.isNullOrEmpty(event) || !event.equalsIgnoreCase("active")) {
             return;
         }
-        JsonObject reasons = context.getVariable("reasons_json");
+        JsonObject reasons = context.getVariable(Constants.Variables.REASONS);
         if (!reasons.has("elapsed_realtime")) {
             context.setError("reasons", reasons);
         }
-        this.logger.info(String.format("process %s reasons, reasons %s", event, reasons.toString()));
-        context.getMap("result").put("elapsed_realtime", reasons.get("elapsed_realtime").getAsString());
+        JsonObject jsonObject = new JsonObject();
+        JsonHelper.copyProperty("elapsed_realtime", reasons, jsonObject);
+
+        JsonObject common = context.getVariable(Constants.Variables.COMMON_JSON);
+
+        jsonObject = JsonHelper.join(jsonObject, common);
+
+        context.setVariable(Constants.Variables.ACTIVE, jsonObject);
     }
 }
